@@ -1,12 +1,34 @@
-
+import React, { useState, useEffect } from 'react';
 import {motion} from "motion/react"
-function Navbar(props) {
-  const darkMode= localStorage.getItem('theme')||  window.matchMedia('(prefers-color-scheme: dark)').matches;
-  console.log(darkMode)
+function Navbar() {
+    const [darkMode, setDarkMode] = useState(localStorage.getItem('theme')||  window.matchMedia('(prefers-color-scheme: dark)').matches?true:false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (
+      savedTheme === 'dark' ||
+      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      setDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+ const toggleTheme = () => {
+    const newTheme = !darkMode;
+    setDarkMode(newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', newTheme);
+  };
+  
+  
   return (
     <nav className="flex w-full h-[40px] justify-between items-center px-4 py-2 border-b  dark:border-gray-700 shadow-light fixed top-0 left-0 z-10 bg-gray-100 dark:bg-gray-900">
         <h1 className="text-xl font-bold pl-5 ">SocialApp</h1>
-      <div className="w-fit flex gap-1 items-center justify-center dark:gap-2 " onClick={props.onClick}>
+      <div className="w-fit flex gap-1 items-center justify-center dark:gap-2 " onClick={toggleTheme}>
         <div className="w-12  h-6 relative flex items-center justify-between p-1 bg-gray-500 dark:bg-blue-600 rounded-full border dark:border-0 ">
         <div className="w-[50%] h-full rounded-full bg-white dark:hidden flex absolute top-0 left-0 border "
        
@@ -15,7 +37,7 @@ function Navbar(props) {
 
 />
 </div>
-<span className="text-sm text-black font-bold dark:text-white">{darkMode==='dark'? "Dark":"Light"}</span>
+<span className="text-sm text-black font-bold dark:text-white">{darkMode? "Dark":"Light"}</span>
       </div>
       </nav>
 

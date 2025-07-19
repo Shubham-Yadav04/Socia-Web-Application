@@ -9,7 +9,7 @@ import Footer from './components/Footer.js';
 function Home() {
  
   return (
-    <div className='relative w-full  md:pt-5'>
+    <div className='relative w-full bg-white/80 dark:bg-gray-900'>
       
         <NavBar  />
      

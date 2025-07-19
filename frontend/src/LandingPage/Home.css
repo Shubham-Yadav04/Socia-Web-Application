@@ -1,14 +1,14 @@
-.fade-left {
+/* .fade-left {
   backdrop-filter: blur(2px) drop-shadow(4px 4px 10px #000) ;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
   opacity: 0.8;
-}
+} */
 /* rgba(255,255,255,...) with rgba(0,0,0,...) in case of dark mode */
-.fade-right {
+/* .fade-right {
   backdrop-filter: blur(2px) drop-shadow(4px 4px 10px #fefbfb) ;
   background: linear-gradient(to left, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
   opacity: 0.8;
-}
+} */
 
 .text-shadow {
   text-shadow: 2px 4px 1px  #405c69; /* Tailwind purple-500 */

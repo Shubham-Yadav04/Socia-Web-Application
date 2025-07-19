@@ -3,11 +3,14 @@ import Profile from '../svgs/Profile'
 import {motion} from 'motion/react'
 function Comment(props) {
     const {
-        profilePic=props.profilePic,
-        username=props.username,
-        replyList=props.replyList || [],
-       likes=props.likes,
-        replies=props.replies,
+        postId, // ye bta ga ki comment kis post pr hai 
+        commentId , // comment ki id hogi ek 
+        profilePic,
+        username,
+        replyList,
+       likes,
+        replies,
+        text
 
     }= props
     const [showReply,setShowReply]=useState(false)
@@ -15,8 +18,8 @@ function Comment(props) {
     const [commentText,setCommentText]=useState("")
     const [commentLikes,setCommentLikes]=useState(likes)
     const [isCommentLiked,setIsCommentLiked]=useState(false)
-    const [commentReplies,setCommentReplies]= useState(replyList)
-    const [replyCount,setReplyCount]= useState(replies)
+    const [commentReplies,setCommentReplies]= useState(replyList||[])
+    const [replyCount,setReplyCount]= useState(replies )
     const handleReply=()=>{
 setReplyBox(true)
     }
@@ -25,7 +28,7 @@ setReplyBox(true)
     console.log("posting a comment ")
     const comment={
         username:"@user123",
-        commentText,
+        text:commentText,
         replies:replyList,
         commentLike:commentLikes,
         replyCount:0
@@ -33,7 +36,9 @@ setReplyBox(true)
     setCommentReplies(prev=>[...prev,comment])
     setReplyCount(prev=>prev+1)
     console.log("comment posted ")
-    
+    console.log(commentReplies)
+    setShowReply(true);
+    setCommentText("");
   };
   const handleCommentLike=()=>{
 if(isCommentLiked){
@@ -46,10 +51,11 @@ else{
 }
   }
   useEffect(()=>{
+   
 console.log("rerendering the component")
-  },[commentReplies])
+  },[])
 return (
-    <div className="comment-container border border-gray-300 dark:border-gray-700 rounded-lg p-4 mb-4 max-w-xl w-full bg-white dark:bg-gray-900 transition-colors duration-200 ">
+    <motion.div className="comment-container rounded-lg px-4 py-1  max-w-xl w-full bg-white dark:bg-gray-900 transition-colors duration-200 " layout>
         <div className="flex gap-1 mb-2">
            { profilePic?<img
                 src="https://via.placeholder.com/40"
@@ -62,8 +68,8 @@ return (
                 <div className="text-sm text-gray-500 dark:text-gray-400">{username|| "@user123"}</div>
             </div>
         </div>
-        <div className="text-sm mb-3 text-gray-800 dark:text-gray-200">
-            {props.commentText}
+        <div className="text-xs mb-3 px-3 text-gray-800 dark:text-gray-200">
+            {text}
         </div>
         <div className="flex items-center mb-3 gap-2">
             <motion.button className={`bg-transparent border-none text-blue-600 dark:text-blue-400 cursor-pointer mr-2 hover:underline focus:outline-none`} onClick={handleCommentLike}
@@ -83,16 +89,16 @@ return (
                 reply
             </button>
         </div>
-        {showReply?<div className="mb-2">
+        {showReply?<div className="mb-1 w-full ">
            {
-            commentReplies.map((comment,idx)=>{
-                <div key={idx} className='w-full border-0'>
-                    <Comment username={comment.username} profilePic={comment.profilePic} replyList={comment.replyList} likes={props.likes} replies={props.replies}/>
-                </div>
-            })
+            commentReplies.map((comment,idx)=>(
+                
+                    <Comment key={idx} username={comment.username} profilePic={comment.profilePic} replyList={comment.replyList} likes={comment.likes} replies={comment.replies} text={comment.text}/>
+                
+            ))
            }
         </div>:
-        <></>}
+        <></>} 
         {
             replyBox?
            <div className="p-3 w-full flex gap-2">
@@ -116,7 +122,7 @@ return (
             :
             <></>
         }
-    </div>
+    </motion.div>
 )
 }
 

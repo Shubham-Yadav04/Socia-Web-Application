@@ -1,11 +1,21 @@
-// comments ko handle krna post ke uske reply ko and all 
-share ko hanle krna hain
+create post --> added multiple media facility also ---> done
+post --related delete  edit post  ----> backend se ek barr id milne lagegi then ye bhi ho gya 
 
-post --related delete edit post 
+design the alert of on delete---> done
+
+share ko handle krna hain -- > baad m dekhung bhut bhari hai --> handled required to add backend api 
+create post ko alg tab dung afir uska use krke edit ko sudhar dunga 
+
 user related --->
-profile dashboard --> follower following posts 
-Suggestions 
-Search --> using user name 
+profile dashboard --> follower following posts ---> 14-07
+Suggestions --> 14-07
+Search --> using user name --> backend aane k baad hi ho payega 
 trending section 
 // sb kuch krne ke baad messaging wegera dekhunga 
 
+after that backend connectivity 
+
+
+
+
+hardcoded ---> shares friend in the post  --> check the share 

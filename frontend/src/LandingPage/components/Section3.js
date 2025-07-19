@@ -3,11 +3,11 @@ import Features from "./Features.js";
 function Section3() {
   return (
     <div className="h-fit w-full items-center  overflow-x-hidden flex flex-col gap-5 relative pt-10 ">
-      <h1 className="text-[3vw] font-bold"> Key Features -</h1>
+      <h1 className="text-[3vw] font-bold dark:text-white/90"> Key Features -</h1>
   
 <div className="w-full h-fit relative px-0 overflow-hidden">
-   <div className="absolute left-0 top-0 h-full w-8 z-20 pointer-events-none fade-left" />
-  <div className="absolute right-0 top-0 h-full w-8 z-20 pointer-events-none fade-right" />
+   <div className="absolute left-0 top-0 h-full w-[25px] z-20 pointer-events-none fade-left  backdrop-blur-sm" />
+  <div className="absolute right-0 top-0 h-full w-[25px] z-20 pointer-events-none fade-right  backdrop-blur-sm" />
 
       <motion.div className="w-full h-fit flex  justify-around gap-5  "
       animate={{ x: ['0%', '-100%'] }}

@@ -39,7 +39,7 @@ const childVariants = {
       whileInView="show"
       viewport={{ once: true }} 
     ><motion.h1
-        className='text-[3vmax] font-bold'
+        className='text-[3vmax] font-bold dark:text-white/80'
         style={{ textShadow: "6px 2px 4px 16px rgb(0, 0, 0)" }}
         variants={childVariants}
       >
@@ -47,21 +47,21 @@ const childVariants = {
       </motion.h1>
 
       <motion.p
-        className='text-xs md:text-sm text-gray-600 font-semibold text-justify'
+        className='text-xs md:text-sm text-gray-600 font-semibold text-justify dark:text-white/60'
         variants={childVariants}
       >
          SocialSphere is an interactive social platform designed to empower individuals to share their insights, experiences, and expertise across diverse domains. Whether it's fitness journeys, technical project development, financial strategies, or opinions on social activities, SocialSphere fosters a community of learning and growth.
       </motion.p>
 
       <motion.h3
-        className='text-[1rem] italic font-bold underline'
+        className='text-[1rem] italic font-bold underline dark:text-white/70'
         variants={childVariants}
       >
         Vision:
       </motion.h3>
 
       <motion.p
-        className='text-xs md:text-sm text-gray-600 font-semibold text-justify'
+        className='text-xs md:text-sm text-gray-600 font-semibold text-justify dark:text-white/50'
         variants={childVariants}
       >
         SocialSphere aspires to be a go-to destination for learning, collaboration, and community engagement, bridging the gap between personal interests and collective growth.
