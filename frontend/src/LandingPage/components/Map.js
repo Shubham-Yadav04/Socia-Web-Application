@@ -2,7 +2,7 @@ import React from 'react'
 import {motion} from 'motion/react'
 function Map() {
   return (
-    <div className='w-full h-[80vmin] bg-blue-100 mt-6'>
+    <div className='w-full h-[80vmin] bg-blue-100 dark:bg-gray-900 mt-6'>
     <div className="  bg-contain bg-no-repeat bg-center w-full h-full border-none shadow-xl" style={{
       backgroundImage: `url(${"/images/millions-map_2x.png"})`
     }}>

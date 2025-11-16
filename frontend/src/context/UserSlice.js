@@ -13,23 +13,33 @@ const UserSlice= createSlice({
         setUser:(state,action)=>{
 state.user=action.payload
         },
+        setPosts:(state,action)=>{
+state.posts=action.payload
+        },
         addPost:(state,action)=>{
 state.posts.push(action.payload)
         },// add the post in the posts and the components using the post will rerender 
         deletePost:(state,action)=>{
             console.log(action.payload)
-            state.posts=state.posts.filter((post)=>post.id!==action.payload.id)
+            state.posts=state.posts.filter((post)=>post.id!==action.payload._id)
         },
         upadatePost:(state,action)=>{
-            const index=state.posts.findIndex((post)=>post.id===action.payload.id)
+            const index=state.posts.findIndex((post)=>post.id===action.payload._id)
             if(index!==-1){
                 state.posts[index]=action.payload
             }
+        }
+        ,
+        updateFollowers:(state,action)=>{
+            state.user.followers.push(action.payload.profileId);
+        },
+        updateProfilePicture:(state,action)=>{
+            state.user.avatar=action.payload;
         }
     }
 
 
 })
 
-export const {setUser,addPost,deletePost,upadatePost}=UserSlice.actions;
+export const {setUser,addPost,deletePost,upadatePost,setPosts,updateFollowers,updateProfilePicture}=UserSlice.actions;
 export default UserSlice.reducer;

@@ -8,53 +8,47 @@ import { useState } from "react";
 import Profile from "../svgs/Profile";
 import CommentIcon from "../svgs/CommentIcon.js";
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { deletePost } from "../../context/UserSlice.js";
 import { useSelector } from "react-redux";
-import {AnimatePresence, motion} from 'motion/react'
+import {motion} from 'motion/react'
+import axios from 'axios'
+import { follow } from "../Functions/Follow.js";
+import { updateFollowers } from "../../context/UserSlice.js";
+
 function Post(props) {
   const {
-    username,
-    id,
+    _id,
     caption,
     media,
-    content,
+    textContent,
     likes,
     commentsCount,
-    commentList,
-    shares,
-  } = props;
-
+    comments,
+    sharesCount,
+  } = props.post;
+const profileId=props.post.user._id
+const username=props.post.user.username;
+const avatar=props.post.user.avatar
   //   props.comments --- it will replace the commentList
 
-  const [likeCount, setLikeCount] = useState(likes);
-  const [commentCount, setCommentCount] = useState(commentsCount);
-  const [shareCount, setShareCount] = useState(shares);
+  const [likeCount, setLikeCount] = useState(likes || 0);
+  const [commentCount, setCommentCount] = useState(commentsCount || 0);
+  const [shareCount, setShareCount] = useState(sharesCount || 0);
   const [isPostLiked, setIsPostLiked] = useState(false);
   const [commentSection, setCommentSection] = useState(false);
-  const [comments, setComments] = useState(commentList);
+  const [commentList, setCommentList] = useState(comments);
   const [commentText, setCommentText] = useState("");
   const [followed, setFollwed] = useState(false);
   const [share, setShare] = useState(false);
 const [postDelete,setPostDelete]=useState(false)
   const [shareTo, setShareTo] = useState([]); // it will have the list of the chatroom where user wants to send the posts
   const user = useSelector((state) => state.user.user);
-  const friends=user?.friends || [
-    {
-      username: "shubham!243",
-    },
-    {
-      username: "1223_rayliegh",
-    },
-    {
-      username: "billionaire_Shubham",
-    },
-  ];
+  const friends= user.follwings || []
   const dispatch = useDispatch();
   const updateLike = () => {
-    // increase the likes on the post
-    console.log("clicked");
+ 
     if (isPostLiked) {
       setLikeCount((prev) => prev - 1);
       setIsPostLiked(false);
@@ -73,16 +67,50 @@ const [postDelete,setPostDelete]=useState(false)
       commentLike: 0,
       replyCount: 0,
     };
-    setComments((prev) => [...prev, comment]);
+    setCommentList((prev) => [...prev, comment]);
     setCommentCount((prev) => prev + 1);
     setCommentText("");
   };
 
+  const handleFollow=async()=>{
+    
+        try {
+            const result= await follow(user._id,profileId);
+            if(result===200){
+                console.log("followed the user successfully ");
+    dispatch(updateFollowers({profileId}));
+    setFollwed(true)
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+  }
+
   const onEdit = () => {};
-  const onDelete = () => {
+  const onDelete = async () => {
     
     // fire a backend request to remove the post on success remove it from the state also
-    dispatch(deletePost({ id }));
+    const password= prompt("Enter your password to delete the post");
+    try {
+       const deleteResult= await axios.delete(`http://localhost:8585/post/delete/${_id}`,{
+      data: { password },
+  withCredentials: true 
+    });
+     if(deleteResult.status===200){
+      console.log("post removed")
+ dispatch(deletePost({ _id }));
+    }
+    } catch (error) {
+      if(error.status===403){
+        alert("wrong password")
+      }
+      else{
+        alert(" Try some time later")
+      }
+    
+    }
+
+   
     console.log("post deleted");
     setPostDelete(false)
   };
@@ -108,6 +136,7 @@ const [postDelete,setPostDelete]=useState(false)
 
   useEffect(() => {
     console.log("rerendering the component");
+    
   }, [commentList]);
 
   const handleShare = () => {
@@ -128,8 +157,8 @@ const [postDelete,setPostDelete]=useState(false)
     <article className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow md:w-[80%] w-full  mx-auto my-4 relative">
       <div className="flex items-center justify-between mb-2">
         <div className="flex gap-2 items-center">
-          {props.userProfile ? (
-            <img alt="profilepic"></img>
+          {avatar? (
+            <img alt="profilepic" src={avatar} className="w-10 h-10 object-cover rounded-full"></img>
           ) : (
             <Profile width={"40"} height={"40"} />
           )}
@@ -137,12 +166,15 @@ const [postDelete,setPostDelete]=useState(false)
             @{username}
             <button
               className={`w-fit px-1  rounded-md text-[8px] font-medium text-white ${
-                followed ? "bg-gray-600" : "bg-blue-600"
-              }`}
-              onClick={() =>
+                followed ? "bg-gray-600" : "bg-blue-600" 
+
+              }  ${profileId===user._id?"hidden":""}` }
+              onClick={() =>{
                 setFollwed((prev) => (prev === true ? false : true))
+                handleFollow()}
               }
-            >
+              disabled={followed===true}
+            > 
               {followed ? "UnFollow" : "Follow"}
             </button>
           </h2>
@@ -150,25 +182,30 @@ const [postDelete,setPostDelete]=useState(false)
         <div className="flex gap-2">
           <button
             onClick={onEdit}
-            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className={`"p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700" ${profileId!==user._id?"hidden":""}`}
             aria-label="Edit"
           >
             {/* Pencil SVG */}
-            <Pencil />
+            <Pencil  width={20} height={20}/>
           </button>
 
           <button
             onClick={()=>setPostDelete(true)}
-            className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900"
+            className={`"p-1 rounded hover:bg-red-100 dark:hover:bg-red-900" ${profileId !== user._id?"hidden":""}`}
             aria-label="Delete"
           >
             {/* Trash SVG */}
-            <Trash />
-          </button>
+            <Trash /> 
+          </button >
+          {
+            profileId !== user._id && <button className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-900">
+              <MoreVertical/>
+            </button>
+          }
         </div>
       </div>
 
-      {media.length>0 && (
+      {media.length>1 && (
         <div className="relative w-full">
           {/* Scroll buttons */}
           <button
@@ -227,9 +264,9 @@ const [postDelete,setPostDelete]=useState(false)
         </div>
       )}
 
-      {content && (
+      {textContent && (
         <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-          {content}
+          {textContent}
         </p>
       )}
 

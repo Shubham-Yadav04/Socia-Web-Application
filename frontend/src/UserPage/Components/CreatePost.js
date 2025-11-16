@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addPost } from '../../context/UserSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-
+import axios from 'axios';
 
 function CreatePost(props) {
 const [caption, setCaption] = React.useState('');
@@ -30,32 +30,40 @@ const handleCaptionChange = (e) => {
     setCaption(e.target.value);
 };
 
-const handlePost=()=>{
+const handlePost=async()=>{
     // trigger the backend api to create a post based on the data such as caption media user 
+
+    // require to send the media textContent and caption only all other already setted in backend 
     console.log("clicked for post creation")
     const post={
-      id:1,
-        content,
+        textContent:content,
         caption,
         media:media?media.map(media=>(
           {url:URL.createObjectURL(media),type:media.type}
         )
-        ):[],
-        likes:0,
-        commentsCount:0,
-        shares:0,
-        username:user?user.username: "user123",
-        commentList:[]
+        ):[], 
+        user:user._id,
+        
     }
 
     // now pass it to the backend api handling the post creation 
-    // on success update the state of the post in the context 
-dispatch(addPost(post));
+    const result= await axios.post("http://localhost:8585/post/upload",post,{
+      withCredentials:true
+    })
+    console.log(result)
+    if(result.status===201) {
+dispatch(addPost(post)); // on success update the state of the post in the context 
 console.log("post created ")
 setCaption('')
 setContent('')
 setMedia(null)
 setMediaPreview(null)
+    }
+    else{
+      alert("Some internal server error occured try to post again");
+    }
+   
+
 }
 
 const scrollRef = useRef();

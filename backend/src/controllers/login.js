@@ -8,6 +8,7 @@ import 'dotenv/config'
 export const loginChecker = async (req, res) => {
 
     const { username, password } = req.body
+    console.log(username , password)
     if (!username || !password) return res.status(400).json({
         "message": "Enter Username and Password"
     })
@@ -15,9 +16,6 @@ export const loginChecker = async (req, res) => {
     // now we have both the username as well as the password we have to check the authentication of the user
     const user = await userModel.findOne({
         "username": username
-    }, {
-        "username": 1,
-        "password": 1
     })
 
     if (!user) return res.status(404).json({
@@ -27,8 +25,9 @@ export const loginChecker = async (req, res) => {
     // now we have the user and details so we have to compare the password using the compare method of the bcrypt
 
     const result = bcrypt.compareSync(password, user.password)
+    console.log(result)
     if (result) {
-
+console.log(" setting the token in the response ")
         // means the user is authorized now we will  generate a jwt token for the user 
         const accessToken = jwt.sign({
             "username": user.username,
@@ -49,19 +48,23 @@ export const loginChecker = async (req, res) => {
 
         res.cookie('jwt', accessToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         res.cookie('jwtRefreshToken', refreshToken, { httpOnly: true, maxAge: 7*24 * 60 * 60 * 1000 });
+console.log("setted the cookie")
+        // try {
+        //     const refershTokenAddition = await userModel.updateOne({ "username": username }, {
+        //         '$set': {
+        //             "refreshToken": refreshToken
+        //         }
+        //     }) // storing the refresh token in the database 
 
-        try {
-            const refershTokenAddition = await userModel.updateOne({ "username": username }, {
-                '$set': {
-                    "refreshToken": refreshToken
-                }
-            })
-
-        }
-        catch (error) {
-            console.log("there is some error occured while adding the refersh token for the user in database ")
-        }
-        return res.status(200).json({ "message": "sign in successfully" })
+        // }
+        // catch (error) {
+        //     console.log("there is some error occured while adding the refersh token for the user in database ")
+        // }
+        return res.status(200).json({ "message": "sign in successfully" ,
+            "jwttoken":accessToken,
+            user:user
+        })
     }
-    return res.status(402).send("wrong username and password ")
+    console.log("returning response 402")
+    return res.status(402).json({"message":"wrong username and password "})
 }

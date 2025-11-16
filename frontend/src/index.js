@@ -5,12 +5,16 @@ import App from './App.js';
 
 import contextStore from './context/contextStore.js';
 import {Provider} from 'react-redux'
+import { ContentContextProvider } from './context/ContentContext.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <ContentContextProvider>
      <Provider store={contextStore}>
+      
     <App />
  </Provider>
+ </ContentContextProvider>
   </React.StrictMode>
 );
 

@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { useState, useEffect } from "react";
-import {AnimatePresence} from 'motion/react'
+import { useState,useEffect } from "react";
+import axios from "axios" 
+import { useDispatch } from "react-redux";
+
 function NavBar() {
   const [hovered, setHovered] = useState();
   const [menu, setMenu] = useState("hidden");
@@ -9,7 +11,8 @@ function NavBar() {
   const [signin, setSignin] = useState(false);
   const [form, setForm] = useState({});
   const [formError, setFormError] = useState("");
- 
+ const navigate = useNavigate();
+ const dispatch= useDispatch();
   const navItems = [
     { name: "About", href: "/about" },  
     { name: "Contact Us", href: "/contact" },
@@ -66,14 +69,45 @@ function NavBar() {
     setMenu(menu === "flex" ? "hidden" : "flex");
   };
 
-  const handleSignin=(e)=>{
+  const handleSignin=async(e)=>{
     e.preventDefault()
-    
+     setFormError("")
+    try{
+        const result= await axios.post("http://localhost:8585/users/login",
+      form,
+      {
+  withCredentials: true
+}
+    )
 
+    
+    if(result.status===200){
+      console.log(result)
+      setForm({})
+      navigate("/dashboard")
+    }
+    }
+    catch(error){
+console.log(error)
+    
+  if (error.response) {
+    const status = error.response.status;
+    console.log(status)
+
+    if (status === 402)  setFormError("Invalid username and password");
+    if (status === 404)  setFormError("User does not exist");
+  
+  } else {
+   
+    setFormError("Something went wrong. Please try again later.");
+  
   }
-  const handleSignup=(e)=>{
+  setForm({})
+}}
+  const handleSignup=async(e)=>{
    
   e.preventDefault();
+  setFormError("")
 console.log("signup");
   if (form.password && form.confirmPassword) {
     if (form.password !== form.confirmPassword) {
@@ -81,9 +115,17 @@ console.log("signup");
       return; 
     }
   }
+  const result= await axios.post("http://localhost:8585/users/register" , form,{
+  withCredentials: true
+});
+  console.log(result);
+  if(result.status===200 && result.data){
+setForm({})
+navigate("/dashboard")
+  }
   }
   return (
-    <div className="w-full flex items-center gap-3 px-3 justify-between sticky top-0 z-10 h-fit py-1 backdrop-blur-sm bg-white/50 dark:bg-gray-900">
+    <div className="w-full flex items-center gap-3 px-3 justify-between sticky top-0 z-10 h-fit py-1 backdrop-blur-sm bg-white/50 dark:bg-[#111] transition-all duration-1000">
       <div className="w-fit flex items-center ">
         <img src=" " alt=""></img>
         <span className="font-bold text-[2vw] text-orange-500 ml-5 dark:text-orange-700 italic">
@@ -122,11 +164,15 @@ console.log("signup");
         <div className="w-[30%] flex justify-evenly">
           <button
             className="sign-button text-base font-bold text-[#D7DAE0] px-2 py-1 text-center min-w-[100px] w-[20%] bg-[#405c69] rounded-lg py-1"
-            onClick={() => setSignup(true)}
+            onClick={() => {
+              setFormError("")
+              setSignup(true)}}
           >
             Sign Up
           </button>
-          <button className="sign-button text-base font-bold text-black px-2 py-1 text-center min-w-[100px] w-[20%] bg-[#C4D144] rounded-lg py-1" onClick={(e)=>setSignin(true)}>
+          <button className="sign-button text-base font-bold text-black px-2 py-1 text-center min-w-[100px] w-[20%] bg-[#C4D144] rounded-lg py-1" onClick={(e)=>{
+            setFormError("")
+            setSignin(true)}}>
             Sign In
           </button>
         </div>
@@ -190,7 +236,9 @@ console.log("signup");
           }}
 
            initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: 1,
+        filter:`blur-${"15px"}`
+       }}
       exit={{ opacity: 0,
        
        }}
@@ -219,10 +267,10 @@ console.log("signup");
           {signup && (
            
               <motion.form
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg px-6 py-2 flex flex-col gap-2 w-full mx-auto"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg px-6 py-2 flex flex-col gap-1 w-full mx-auto"
               layoutId="signup-signin"
               >
-                <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-1">
                   Sign Up
                 </h2>
                 <div className="flex flex-col gap-2">
@@ -235,7 +283,7 @@ console.log("signup");
                   <input
                     id="username"
                     type="text"
-                    className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
                     required
                     autoComplete="username"
                     value={form.username}
@@ -243,8 +291,27 @@ console.log("signup");
                       setForm((prev) => ({ ...prev, username: e.target.value }))
                     }
                   />
-                </div>
-                <div className="flex flex-col gap-2">
+                
+                  <label
+                    htmlFor="fullname"
+                    className="text-sm font-semibold text-gray-700 dark:text-gray-200"
+                  >
+                    FullName
+                  </label>
+                  <input
+                    id="fullname"
+                    type="fullname"
+                    className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    required
+                    autoComplete="fullname"
+                    value={form.fullname}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, fullname: e.target.value }))
+                    }
+                  />
+             
+                
+               
                   <label
                     htmlFor="email"
                     className="text-sm font-semibold text-gray-700 dark:text-gray-200"
@@ -254,7 +321,7 @@ console.log("signup");
                   <input
                     id="email"
                     type="email"
-                    className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="email"
                     value={form.email}
@@ -262,8 +329,8 @@ console.log("signup");
                       setForm((prev) => ({ ...prev, email: e.target.value }))
                     }
                   />
-                </div>
-                <div className="flex flex-col gap-2">
+              
+              
                   <label
                     htmlFor="password"
                     className="text-sm font-semibold text-gray-700 dark:text-gray-200"
@@ -273,7 +340,7 @@ console.log("signup");
                   <input
                     id="password"
                     type="password"
-                    className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="new-password"
                     value={form.password}
@@ -281,8 +348,7 @@ console.log("signup");
                       setForm((prev) => ({ ...prev, password: e.target.value }))
                     }
                   />
-                </div>
-                <div className="flex flex-col gap-2">
+            
                   <label
                     htmlFor="confirmPassword"
                     className="text-sm font-semibold text-gray-700 dark:text-gray-200"
@@ -292,7 +358,7 @@ console.log("signup");
                   <input
                     id="confirmPassword"
                     type="password"
-                    className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="new-password"
                     value={form.confirmPassword}
@@ -303,7 +369,7 @@ console.log("signup");
                       }))
                     }
                   />
-                </div>
+               </div>
                 <div
                   id="signup-error"
                   className="text-red-500 text-xs min-h-[1.5em] w-full text-center"

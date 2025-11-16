@@ -4,8 +4,8 @@
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/main.js  nodemon src/main.js",
-    "dev": "node nodemon -r dotenv/config  --experimental-json-modules src/main.js"
+    "start": " node src/main.js nodemon src/main.js",
+     "dev": "npx nodemon -r dotenv/config --experimental-json-modules src/main.js"
   },
   "type": "module",
   "author": "",
@@ -25,6 +25,6 @@
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.10"
   }
 }

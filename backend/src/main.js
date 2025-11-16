@@ -9,7 +9,7 @@ const app = express();
 connectDB()
 
 
-app.listen(9090, () => {
+app.listen(8585, () => {
     console.log("the server has started ")
 })
 app.use(cookieParser())
@@ -20,7 +20,8 @@ app.use(express.urlencoded({
 app.use(express.json({ limit: '20Kb' }))
 app.use(express.static('public'))
 app.use(cors({
-    origin: "*"
+  origin: 'http://localhost:8586',
+  credentials: true
 }))
 
 

@@ -32,11 +32,8 @@ console.log(textContent , caption)
     }
 
     try {
-        const user = await userModel.findById(req.user._id);
-        if (!user) return res.status(404).json({ message: "No such user exists." });
-
         const result = await postModel.create({
-            user: user._id,
+            user: req.user._id,
             textContent,
             caption,
             media: [
@@ -56,7 +53,10 @@ console.log(textContent , caption)
             );
 
             if (postAddedToUser.modifiedCount > 0) {
-                return res.status(201).send("Post created successfully.");
+                return res.status(201).json({"message":"Post created successfully."
+                    ,
+                    result
+                });
             }
 
             await postModel.deleteOne({ _id: result._id });
@@ -68,12 +68,13 @@ console.log(textContent , caption)
     }
 };
 // controller for  deleting the post or edit the captions 
-export const deletePost= async (req,res,user)=>{
+export const deletePost= async (req,res)=>{
     // post ki id aayegi as a request param
 
     const password= req.body.password
     const postId= req.params.postId
     const user= req.user
+    console.log(password)
     if(!postId) return res.status(400).json(
         {
             message: "Provide the Post ID to be deleted "
@@ -106,9 +107,9 @@ export const deletePost= async (req,res,user)=>{
         })
 
         // agr passowrd bhi correct h to we have to delete the post and if it has media in it then we have to delete the media form the cloudinary also
-let deletPost ;
+
     try {
-       deletePost= await postModel.deleteOne({
+      const deletePost= await postModel.deleteOne({
             _id: postId
         })
 
@@ -151,6 +152,9 @@ export const getPost = async (req,res)=>{
     
         const post = await postModel.findOne({
             _id:postId
+        }).populate({
+            path:'user',
+            select:'username avatar'
         })
 
         if(!post) return res.status.json({
@@ -541,6 +545,7 @@ let comment;
 
 // share a post 
 export const sharePost= async (req,res)=>{
+    //  require post id and the the user id 
     const postId=req.params.postId
     const userId= req.body.userId
 
@@ -578,5 +583,56 @@ export const sharePost= async (req,res)=>{
         return res.status(500).json({
             message:"internal server error occurred"
         })
+    }
+}
+
+
+// get random posts 
+
+export const getRandomPosts=async (req,res)=>{
+const userId= req.user._id
+    try{
+        const randomPosts= await postModel.aggregate([
+             {
+    $match: {
+      user: { $ne: new mongoose.Types.ObjectId(userId) }  // exclude logged-in user's posts
+    }
+  },
+            {
+                $sample:{
+                    size:20
+                },
+            },
+                {
+                    $lookup:{
+                        from:'users',
+                        localField:'user',
+                        foreignField:'_id',
+                        as:'user'
+                    }
+                },
+                {
+                    $unwind:'$user'
+                }
+                ,{
+                    $project: {
+          _id: 1,
+          caption: 1,
+          media: 1,
+          textContent:1,
+          createdAt: 1,
+          'user._id': 1,
+          'user.username': 1,
+          'user.avatar': 1
+        }
+                }   
+        ])
+        return res.status(200).json({
+            randomPosts
+        })
+    }
+    catch(error){
+        console.log(error.message);
+return res.status(500);
     }
 }

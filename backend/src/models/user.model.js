@@ -25,8 +25,6 @@ const userSchema= new mongoose.Schema({
     },
     avatar:{
         type:String,
-        required:true,
-        
     },
   
    userPosts:[
@@ -52,21 +50,18 @@ const userSchema= new mongoose.Schema({
         type:String,
         required:[true,'Password is required']
     },
-    refreshToken:{
-        type:String,
-    },
     following:[
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            unique:true
+           
         }
     ],
     followers:[
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:'User',
-            unique:true
+            
         }
     ]
 },{timestamps:true});

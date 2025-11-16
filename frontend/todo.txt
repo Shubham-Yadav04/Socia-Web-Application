@@ -1,21 +1,24 @@
 create post --> added multiple media facility also ---> done
-post --related delete  edit post  ----> backend se ek barr id milne lagegi then ye bhi ho gya 
+post --related delete   ----> hogya
 
 design the alert of on delete---> done
 
-share ko handle krna hain -- > baad m dekhung bhut bhari hai --> handled required to add backend api 
-create post ko alg tab dung afir uska use krke edit ko sudhar dunga 
+ handled follow from post and Suggestions --->  done
 
 user related --->
-profile dashboard --> follower following posts ---> 14-07
-Suggestions --> 14-07
+profile dashboard --> follower following posts ---> 14-07 --->> done
+Suggestions --> 14-07  --->> done
+
+
+
+handleEditDetail ---> 8-08
+handleProfileEdit--->8-08
+
+
+ post me three vertical dots ko handle krna hai 
+share ko handle krna hain -- > baad m dekhung bhut bhari hai --> handled required to add backend api 
+create post ko alg tab dung afir uska use krke edit ko sudhar dunga
 Search --> using user name --> backend aane k baad hi ho payega 
+
 trending section 
 // sb kuch krne ke baad messaging wegera dekhunga 
-
-after that backend connectivity 
-
-
-
-
-hardcoded ---> shares friend in the post  --> check the share 

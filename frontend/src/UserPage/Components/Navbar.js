@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {motion} from "motion/react"
+import { Link } from 'react-router-dom';
+import Message from '../svgs/Message';
+import Setting from '../svgs/Setting';
+import useContentContext from '../../context/ContentContext';
 function Navbar() {
     const [darkMode, setDarkMode] = useState(localStorage.getItem('theme')||  window.matchMedia('(prefers-color-scheme: dark)').matches?true:false);
-
+const {setAsideView} =useContentContext()
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (
@@ -27,8 +31,18 @@ function Navbar() {
   
   return (
     <nav className="flex w-full h-[40px] justify-between items-center px-4 py-2 border-b  dark:border-gray-700 shadow-light fixed top-0 left-0 z-10 bg-gray-100 dark:bg-gray-900">
-        <h1 className="text-xl font-bold pl-5 ">SocialApp</h1>
-      <div className="w-fit flex gap-1 items-center justify-center dark:gap-2 " onClick={toggleTheme}>
+        <Link to="/" className="text-xl font-bold pl-5 italic underline-none" >Socia</Link>
+        <div className='flex items-center h-full gap-12'>
+        <div className=' flex md:hidden items-center justify-between p-2 h-full flex-shrink-0 w-[100px] gap-5'>
+  <div className='w-12 h-full flex items-center justify-center' onClick={(e)=>{
+    e.stopPropagation()
+    setAsideView(1)}}><Message /></div>
+<div className='w-12 h-full flex items-center justify-center' onClick={(e)=>{
+e.stopPropagation()
+setAsideView(2)
+}}><Setting/></div>
+</div>
+      <div className=" flex gap-1 items-center justify-center dark:gap-2 flex-shrink " onClick={toggleTheme}>
         <div className="w-12  h-6 relative flex items-center justify-between p-1 bg-gray-500 dark:bg-blue-600 rounded-full border dark:border-0 ">
         <div className="w-[50%] h-full rounded-full bg-white dark:hidden flex absolute top-0 left-0 border "
        
@@ -38,6 +52,7 @@ function Navbar() {
 />
 </div>
 <span className="text-sm text-black font-bold dark:text-white">{darkMode? "Dark":"Light"}</span>
+      </div>
       </div>
       </nav>
 

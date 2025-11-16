@@ -19,7 +19,7 @@ export const Logout= async (req , res)=>{
 
         if(result.modifiedCount>0) {
             return res.status(200).json({
-            message:" Logged Successfully"
+            message:" Logged out Successfully"
         })}
        
         return res.send("refresh Token not reseted ")
