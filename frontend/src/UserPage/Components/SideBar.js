@@ -34,7 +34,7 @@ function SideBar() {
     { icon: <Profile />, label: "Profile", handleClick: () => setView(5) },
   ];
   return (
-    <div className="w-full md:w-fit h-fit md:h-[93%] flex md:flex-col md:justify-between md:border-r dark:border-gray-700 fixed bottom-0  md:left-0 md:top-[44px] md:pb-5">
+    <div className="w-full md:w-fit h-fit md:h-[93%] flex md:flex-col md:justify-between md:border-r dark:border-gray-700 fixed bottom-0 md:left-0 md:top-[44px] md:pb-5">
       <motion.div
         variants={containerVariants}
         initial="hidden"

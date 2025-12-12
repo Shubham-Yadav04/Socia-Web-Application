@@ -51,7 +51,7 @@ export default function MainPage() {
   }
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 h-screen hide-scrollbar overflow-y-scroll transition-all duration-500">
+    <div className="bg-gray-100 flex flex-col dark:bg-gray-900 text-gray-800 dark:text-gray-100 h-screen hide-scrollbar overflow-y-scroll transition-all duration-500">
       {
         user !== null ?
           <>
