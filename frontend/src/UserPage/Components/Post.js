@@ -10,12 +10,11 @@ import CommentIcon from "../svgs/CommentIcon.js";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { deletePost } from "../../context/UserSlice.js";
+import { deletePost, updateFollowings } from "../../context/UserSlice.js";
 import { useSelector } from "react-redux";
 import {motion} from 'motion/react'
 import axios from 'axios'
 import { follow } from "../Functions/Follow.js";
-import { updateFollowers } from "../../context/UserSlice.js";
 
 function Post(props) {
   const {
@@ -40,12 +39,13 @@ const avatar=props.post.user.avatar
   const [commentSection, setCommentSection] = useState(false);
   const [commentList, setCommentList] = useState(comments);
   const [commentText, setCommentText] = useState("");
-  const [followed, setFollwed] = useState(false);
+ 
   const [share, setShare] = useState(false);
 const [postDelete,setPostDelete]=useState(false)
   const [shareTo, setShareTo] = useState([]); // it will have the list of the chatroom where user wants to send the posts
   const user = useSelector((state) => state.user.user);
-  const friends= user.follwings || []
+  const friends= user.following || []
+   const [followed, setFollwed] = useState(friends.includes(profileId) || false);
   const dispatch = useDispatch();
   const updateLike = () => {
  
@@ -57,6 +57,7 @@ const [postDelete,setPostDelete]=useState(false)
       setIsPostLiked(true);
     }
   };
+  console.log('user media',media)
   const postComment = () => {
     // take the user detail like username user profile , profileId  whose comment is this which is going to be posted
     console.log("posting a comment ");
@@ -73,12 +74,11 @@ const [postDelete,setPostDelete]=useState(false)
   };
 
   const handleFollow=async()=>{
-    
         try {
             const result= await follow(user._id,profileId);
             if(result===200){
                 console.log("followed the user successfully ");
-    dispatch(updateFollowers({profileId}));
+    dispatch(updateFollowings({profileId}));
     setFollwed(true)
             }
         } catch (error) {
@@ -231,18 +231,18 @@ const [postDelete,setPostDelete]=useState(false)
             ref={scrollRef}
             className="mb-2 w-full overflow-x-scroll md:overflow-hidden hide-scrollbar flex gap-2 items-center  snap-x snap-mandatory"
           >
-            {media.map((media, idx) =>
-              media && media.type.startsWith("image") ? (
+            {media.map((m, idx) =>
+              m && m.mediaType.startsWith("image") ? (
                 <img
                   key={idx}
-                  src={media.url}
+                  src={m.url}
                   alt="Preview"
                   className="h-auto w-full min-w-full rounded-lg object-cover snap-start transition-all duration-300 ease-in-out mx-5"
                 />
-              ) : media && media.type.startsWith("video") ? (
+              ) : m && m.mediaType.startsWith("video") ? (
                 <video
                   key={idx}
-                  src={media}
+                  src={m.url}
                   controls
                   className="h-auto w-full min-w-full rounded-xl object-cover snap-start transition-all duration-300 ease-in-out shadow-md"
                 />

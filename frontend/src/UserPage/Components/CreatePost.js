@@ -21,6 +21,7 @@ const handleMediaChange = (e) => {
     const file = e.target.files;// gives a file map whose key are index 
     const files=Array.from(file)
     if (files) {
+      console.log(files)
         setMedia(files);
         setMediaPreview(files.map(file=>URL.createObjectURL(file)));// media preview contains only the url
     }
@@ -38,21 +39,25 @@ const handlePost=async()=>{
     const post={
         textContent:content,
         caption,
-        media:media?media.map(media=>(
-          {url:URL.createObjectURL(media),type:media.type}
-        )
-        ):[], 
+        media:media, 
         user:user._id,
         
     }
 
     // now pass it to the backend api handling the post creation 
-    const result= await axios.post("http://localhost:8585/post/upload",post,{
+    const formData= new FormData();
+    formData.append('textContent',content);
+    formData.append('caption',caption);
+    media.forEach((file,index)=>{
+        formData.append('media',file)
+    })
+    formData.append('user',user._id)
+    const result= await axios.post("http://localhost:8585/post/upload",formData,{
       withCredentials:true
     })
     console.log(result)
     if(result.status===201) {
-dispatch(addPost(post)); // on success update the state of the post in the context 
+dispatch(addPost(result.data.result)); // on success update the state of the post in the context 
 console.log("post created ")
 setCaption('')
 setContent('')

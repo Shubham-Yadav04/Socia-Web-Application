@@ -17,6 +17,7 @@ state.user=action.payload
 state.posts=action.payload
         },
         addPost:(state,action)=>{
+             console.log("INSIDE REDUCER", action.payload);
 state.posts.push(action.payload)
         },// add the post in the posts and the components using the post will rerender 
         deletePost:(state,action)=>{
@@ -33,6 +34,9 @@ state.posts.push(action.payload)
         updateFollowers:(state,action)=>{
             state.user.followers.push(action.payload.profileId);
         },
+         updateFollowings:(state,action)=>{
+            state.user.followings.push(action.payload.profileId);
+        },
         updateProfilePicture:(state,action)=>{
             state.user.avatar=action.payload;
         }
@@ -41,5 +45,5 @@ state.posts.push(action.payload)
 
 })
 
-export const {setUser,addPost,deletePost,upadatePost,setPosts,updateFollowers,updateProfilePicture}=UserSlice.actions;
+export const {setUser,addPost,deletePost,upadatePost,setPosts,updateFollowers,updateFollowings,updateProfilePicture}=UserSlice.actions;
 export default UserSlice.reducer;

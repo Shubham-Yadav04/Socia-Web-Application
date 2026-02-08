@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
-
+import { useSelector } from "react-redux";
 import { Search, SearchCheckIcon } from "lucide-react";
 import SuggestionProfile from "./SuggestionProfile.js";
 const ExploreSection = () => {
@@ -59,7 +59,7 @@ const result= await axios.get('http://localhost:8585/users/suggestions',{
       </div>
 
       {!searched && (
-        <div className="grid grid-cols-[repeat(auto-fit,_minmax(100px,_1fr))] gap-4 justify-items-center">
+        <div className="grid grid-cols-[repeat(auto-fit,_minmax(100px,_1fr))] gap-4 ">
            {
             suggestions.map(user=>
               <SuggestionProfile key={user._id} profileId={user._id} username={user.username} profileImg={user.avatar}/>

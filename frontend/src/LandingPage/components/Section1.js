@@ -5,7 +5,7 @@ function Section1() {
   
 
   return (
-    <section className='w-full gap-3 px-4 min-h-[90vh] h-fit mt-5 overflow-x-hidden md:px-20 md:mt-10'>
+    <section className='w-full gap-3 px-4 h-fit md:min-h-[80vh] mb-t mt-5 overflow-x-hidden md:px-20 md:mt-10'>
     <div className='w-full flex flex-col md:flex-row items-center justify-center h-full gap-5 '>
     <div className=' section1-text-container w-full p-5 md:p-0 md:w-[50%] flex flex-col justify-center h-full gap-2 md:pt-5'>
         <h5 className='text-red-700 text-sm font-bold dark:text-red-500'> Social Alien's-Community  </h5>

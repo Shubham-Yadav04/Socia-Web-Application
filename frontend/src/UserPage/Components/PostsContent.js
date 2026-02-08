@@ -36,14 +36,14 @@ const result= await axios.get('http://localhost:8585/post/random',{
       },
       textContent: "afaifakaiufanaifja",
       media: [
-        { type: "image", url: "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=800&q=80" }
+        { mediaType: "image", url: "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=800&q=80" }
       ],
       comments: [
         {
           id: 1,
           user: { username: "johndoe", avatar: "https://i.pravatar.cc/150?img=5" },
           text: "Nice shot!",
-          media: [
+          mediaType: [
             { type: "image", url: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=400&q=80" }
           ],
           date: "24-11-2022"
@@ -58,8 +58,8 @@ const result= await axios.get('http://localhost:8585/post/random',{
       },
       textContent: "Exploring the city today — love the light here.",
       media: [
-        { type: "image", url: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?w=800&q=80" },
-        { type: "image", url: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&q=80" }
+        { mediaType: "image", url: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?w=800&q=80" },
+        { mediaType: "image", url: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&q=80" }
       ],
       comments: [
         {
@@ -84,7 +84,7 @@ const result= await axios.get('http://localhost:8585/post/random',{
       },
       textContent: "Quick clip from yesterday's hike. The waterfall was incredible.",
       media: [
-        { type: "video", url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" }
+        { mediaType: "video", url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" }
       ],
       comments: [
         {
@@ -103,7 +103,7 @@ const result= await axios.get('http://localhost:8585/post/random',{
       },
       textContent: "Throwback to last summer — coffee and sunsets.",
       media: [
-        { type: "image", url: "https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=800&q=80" }
+        { mediaType: "image", url: "https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=800&q=80" }
       ],
       comments: [
         {

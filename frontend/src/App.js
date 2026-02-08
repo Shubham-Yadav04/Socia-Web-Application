@@ -14,10 +14,7 @@ function App() {
     <Router>
       <Routes>
       <Route path="/" element={< Home/>} />
-    
       <Route path="/dashboard" element={<MainPage/>} />
-   
-     
       </Routes>
     </Router>
  

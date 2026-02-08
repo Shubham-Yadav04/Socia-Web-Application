@@ -8,42 +8,44 @@ import { commentModel } from "../models/comment.model.js";
 
 // post route operations 
 export const uploadPost = async (req, res) => {
-    
+    console.log(req.body);
     const textContent = req.body.textContent?.trim();
     const caption = req.body.caption?.trim() || null
-    let media_url = req.file?.path || null;  
-console.log(textContent , caption)
-    if (!textContent && !media_url) {
-        return res.status(400).send("You haven't provided any content to post.");
+   
+    const files = req.files || [];
+
+if (!textContent && files.length === 0) {
+  return res.status(400).send("You haven't provided any content to post.");
+}
+
+let media = [];
+
+try {
+  for (const file of files) {
+    const result = await uploadFileAsync(file.path);
+
+    if (!result?.secure_url) {
+      return res.status(500).send("Failed to upload media, please try again.");
     }
 
-    let cloudinaryUpload = null;
-    if (media_url) {
-        try {
-            cloudinaryUpload = await uploadFileAsync(media_url);
-            if (!cloudinaryUpload?.secure_url) {
-                return res.status(500).send("Failed to upload media_url, please try again.");
-            }
-            
-        } catch (uploadError) {
-            console.error("Cloudinary upload failed:", uploadError);
-            return res.status(500).send("Error uploading media.");
-        }
-    }
+    media.push({
+      url: result.secure_url,
+      mediaType: result.resource_type,
+      public_id: result.public_id,
+    });
+  }
+} catch (uploadError) {
+  console.error("Cloudinary upload failed:", uploadError);
+  return res.status(500).send("Error uploading media.");
+}
 
+console.log(media);
     try {
         const result = await postModel.create({
             user: req.user._id,
             textContent,
             caption,
-            media: [
-                media_url?{
-                    url: cloudinaryUpload.secure_url,
-                    mediaType: cloudinaryUpload.resource_type,
-                    public_id: cloudinaryUpload.public_id
-                }:
-                null
-            ]
+            media:media
         });
 
         if (result) {
