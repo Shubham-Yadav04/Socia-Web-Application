@@ -1,12 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion,AnimatePresence } from "motion/react";
 import { useState,useEffect } from "react";
 import axios from "axios" 
 import { useDispatch } from "react-redux";
 
 function NavBar() {
   const [hovered, setHovered] = useState();
-  const [menu, setMenu] = useState("hidden");
+  const [menu, setMenu] = useState(false);
   const [signup, setSignup] = useState(false);
   const [signin, setSignin] = useState(false);
   const [form, setForm] = useState({});
@@ -66,7 +66,7 @@ function NavBar() {
   };
 
   const handleMenuClick = () => {
-    setMenu(menu === "flex" ? "hidden" : "flex");
+    setMenu(prev => !prev);
   };
 
   const handleSignin=async(e)=>{
@@ -125,10 +125,10 @@ navigate("/dashboard")
   }
   }
   return (
-    <div className="w-full flex items-center gap-3 px-3 justify-between sticky top-0 z-10 h-fit py-1 backdrop-blur-sm bg-white/50 dark:bg-[#111] transition-all duration-1000">
+    <div className="w-full flex items-center gap-3 px-3 justify-between sticky top-0 z-20 h-fit py-1 backdrop-blur-md bg-white/50 dark:bg-[#111]/70 transition-all duration-1000">
       <div className="w-fit flex items-center ">
         <img src=" " alt=""></img>
-        <span className="font-bold text-[2vw] text-orange-500 ml-5 dark:text-orange-700 italic">
+        <span className="font-bold text-lg md:text-[2vw] text-orange-500 ml-5 dark:text-orange-700 italic">
           SOCIA
         </span>
       </div>
@@ -161,16 +161,16 @@ navigate("/dashboard")
             </motion.div>
           ))}
         </motion.nav>
-        <div className="w-[30%] flex justify-evenly">
+        <div className="w-[30%] flex justify-end ">
           <button
-            className="sign-button text-base font-bold text-[#D7DAE0] px-2 py-1 text-center min-w-[100px] w-[20%] bg-[#405c69] rounded-lg py-1"
+            className="sign-button text-base font-bold text-black dark:text-[#D7DAE0] px-2 py-1 text-center min-w-[100px] w-[20%]  rounded-lg py-1"
             onClick={() => {
               setFormError("")
               setSignup(true)}}
           >
             Sign Up
           </button>
-          <button className="sign-button text-base font-bold text-black px-2 py-1 text-center min-w-[100px] w-[20%] bg-[#C4D144] rounded-lg py-1" onClick={(e)=>{
+          <button className="sign-button text-base font-bold text-black p1 text-center min-w-[100px] w-fit bg-[#C4D144] rounded-lg" onClick={(e)=>{
             setFormError("")
             setSignin(true)}}>
             Sign In
@@ -192,40 +192,88 @@ navigate("/dashboard")
         </span>
 
         <div
-          className=" menu w-[20%] flex items-center justify-end md:hidden dark:text-white"
+          className="flex items-center justify-end md:hidden dark:text-white"
           onClick={() => handleMenuClick()}
         >
-          <i class="ri-menu-line menu-icon"></i>
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
         </div>
       </div>
-      <div
-        className={`${menu} absolute right-10 top-[20px] w-[30%] px-4 py-3 bg-white/50  rounded-lg backdrop-blur md:hidden border shadow-lg shadow-gray-700 border-t-0`}
-      >
-        <nav className="flex flex-col justify-start items-center gap-1 divide-y divide-black divide-3  ">
-          <Link src="#About" className="text-sm font-bold text-gray-800 w-full">
-            About Us
-          </Link>
-          <Link
-            src="#contact"
-            className="text-sm font-bold text-gray-800 w-full"
-          >
-            Contact Us
-          </Link>
-          <Link
-            src="#services"
-            className="text-sm font-bold text-gray-800 w-full"
-          >
-            Services
-          </Link>
-          <Link
-            src="#history"
-            className="text-sm font-bold text-gray-800 w-full"
-          >
-            History
-          </Link>
-        </nav>
-      </div>
+       <AnimatePresence>
+  {menu && (
+    <motion.div
+      // Animation Settings
+      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       
+      className="absolute right-6 top-[70px] w-[220px] z-50 overflow-hidden
+                 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl 
+                 rounded-2xl border border-slate-200/50 dark:border-white/10 
+                 shadow-[0_20px_50px_rgba(0,0,0,0.15)] md:hidden"
+    >
+      <motion.nav 
+        className="flex flex-col p-2"
+        initial="closed"
+        animate="open"
+        variants={{
+          open: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
+          closed: { transition: { staggerChildren: 0.05, staggerDirection: -1 } }
+        }}
+      >
+        {[
+          { name: 'About Us', href: '#About', icon: 'ri-information-line' },
+          { name: 'Contact Us', href: '#contact', icon: 'ri-customer-service-2-line' },
+          { name: 'Services', href: '#services', icon: 'ri-mickey-line' },
+          { name: 'History', href: '#history', icon: 'ri-history-line' },
+        ].map((item) => (
+          <motion.div
+            key={item.name}
+            variants={{
+              open: { opacity: 1, x: 0 },
+              closed: { opacity: 0, x: -10 }
+            }}
+          >
+            <Link
+              href={item.href}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-bold 
+                         text-slate-700 dark:text-slate-200 rounded-xl
+                         hover:bg-orange-500/10 hover:text-orange-600 
+                         dark:hover:bg-orange-500/20 dark:hover:text-orange-400
+                         transition-all duration-200 active:scale-95"
+              onClick={() => setMenu(false)} // Close menu on click
+            >
+              <i className={`${item.icon} text-lg opacity-70`}></i>
+              {item.name}
+            </Link>
+          </motion.div>
+        ))}
+
+        {/* Action buttons inside mobile menu for better UX */}
+        <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-1">
+           <button 
+             onClick={() => { setSignin(true); setMenu(false); }}
+             className="w-full text-left px-4 py-3 text-sm font-black text-orange-500 italic"
+           >
+             SIGN IN
+           </button>
+        </div>
+      </motion.nav>
+    </motion.div>
+  )}
+</AnimatePresence>
       {signup || signin ? (
         <div
           className="w-full h-screen absolute left-0 top-0 py-5 bg-white/30  "

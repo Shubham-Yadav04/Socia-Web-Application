@@ -2,7 +2,7 @@ import React from 'react'
 
 function Footer() {
   return (
-    <footer className='w-full h-fit flex flex-col gap-3 pt-6 bg-blue-100 dark:bg-gray-900'>
+    <footer className='w-full h-fit flex flex-col gap-3 pt-6 bg-blue-100 dark:bg-[#111] '>
         <div className="w-full flex flex-col">
           <div className="w-full flex flex-col items-center gap-3 px-4 pb-4">
             <h4 className='text-[2rem] font-bold text-shadow dark:text-white'>About Us</h4>

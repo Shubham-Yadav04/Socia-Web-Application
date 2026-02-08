@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+
 import Pencil from "../svgs/Pencil";
 import Trash from "../svgs/Trash";
 import Heart from "../svgs/Heart";
@@ -57,7 +57,6 @@ const [postDelete,setPostDelete]=useState(false)
       setIsPostLiked(true);
     }
   };
-  console.log('user media',media)
   const postComment = () => {
     // take the user detail like username user profile , profileId  whose comment is this which is going to be posted
     console.log("posting a comment ");
@@ -133,12 +132,6 @@ const [postDelete,setPostDelete]=useState(false)
     if (direction === "right") setActiveIndex((prev) => prev + 1);
     else setActiveIndex((prev) => prev - 1);
   };
-
-  useEffect(() => {
-    console.log("rerendering the component");
-    
-  }, [commentList]);
-
   const handleShare = () => {
    
     // on selection of the user send the post url or id to the chatroom
@@ -151,8 +144,6 @@ const [postDelete,setPostDelete]=useState(false)
   };
 
   // hard coded on adding backend i have to remove the hard codded value
-
-
   return (
     <article className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow md:w-[80%] w-full  mx-auto my-4 relative">
       <div className="flex items-center justify-between mb-2">

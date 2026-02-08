@@ -30,7 +30,10 @@ function SideBar() {
     { icon: <HomeIcon />, label: "Home", handleClick: () => setView(1) },
     { icon: <Search />, label: "Explore", handleClick: () => setView(2) },
     { icon: <AddPost />, label: "Post", handleClick: () => setView(3) },
-    { icon: <Message />, label: "Messages", handleClick: () => setAsideView(2) },
+    { icon: <Message />, label: "Messages", handleClick: () =>{
+       if(window.innerWidth<768) setView(6)
+      setAsideView(2)
+    } },
     { icon: <Profile />, label: "Profile", handleClick: () => setView(5) },
   ];
   return (

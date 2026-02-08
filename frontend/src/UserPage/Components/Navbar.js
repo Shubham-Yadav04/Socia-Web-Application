@@ -32,11 +32,8 @@ const {setView} =useContentContext()
   return (
     <nav className="flex w-full h-[40px] justify-between items-center px-4 py-2 border-b  dark:border-gray-700 shadow-light fixed top-0 left-0 z-10 bg-gray-100 dark:bg-gray-900">
         <Link to="/" className="text-xl font-bold pl-5 italic underline-none" >Socia</Link>
-        <div className='flex items-center  h-full gap-12'>
-        <div className=' flex  items-center justify-between md:hidden sm:flex p-2  flex-shrink-0 w-[100px] gap-5'>
-  <div className='w-12  flex items-center justify-center' onClick={(e)=>{
-    e.stopPropagation()
-    setView(6)}}><Message /></div>
+        <div className='flex items-center  h-full '>
+        <div className=' flex  items-center justify-end md:hidden sm:flex p-2  flex-shrink-0 w-[100px] gap-2'>
 <div className='w-12  flex  items-center justify-center' onClick={(e)=>{
 e.stopPropagation()
 setView(7)
@@ -44,11 +41,11 @@ setView(7)
 </div>
 <div className='w-fit h-full'>
       <div className=" flex gap-1 items-center justify-center dark:gap-2 flex-shrink " onClick={toggleTheme}>
-        <div className="w-12  h-6 relative flex items-center justify-between p-1 bg-gray-500 dark:bg-blue-600 rounded-full border dark:border-0 ">
+        <div className="w-12  h-6 relative flex items-center justify-between p-1 bg-black dark:bg-white rounded-full border dark:border-0 ">
         <div className="w-[50%] h-full rounded-full bg-white dark:hidden flex absolute top-0 left-0 border "/>
 <div className="w-[50%] h-full rounded-full bg-gray-800 dark:flex hidden absolute top-0 -right-0.5 "/>
 </div>
-<span className="text-sm text-black font-bold dark:text-white">{darkMode? "Dark":"Light"}</span>
+<span className="hidden md:flex md:text-sm text-black font-bold dark:text-white">{darkMode? "Dark":"Light"}</span>
       </div>
       </div>
       </div>
