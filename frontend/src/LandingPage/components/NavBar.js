@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion,AnimatePresence } from "motion/react";
 import { useState,useEffect } from "react";
 import axios from "axios" 
-import { useDispatch } from "react-redux";
+
 
 function NavBar() {
   const [hovered, setHovered] = useState();
@@ -12,7 +12,7 @@ function NavBar() {
   const [form, setForm] = useState({});
   const [formError, setFormError] = useState("");
  const navigate = useNavigate();
- const dispatch= useDispatch();
+
   const navItems = [
     { name: "About", href: "/about" },  
     { name: "Contact Us", href: "/contact" },

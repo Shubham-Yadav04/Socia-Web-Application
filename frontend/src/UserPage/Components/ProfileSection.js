@@ -22,17 +22,6 @@ function ProfileSection() {
   }
 
 
-  //  handling the crop image 
-  //   const [selectedFile, setSelectedFile] = useState(null);
-  // const [showCropper, setShowCropper] = useState(false);
-
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     setSelectedFile(file);
-  //     setShowCropper(true);
-  //   }
-  // };
 
   const handleCroppedImage = (blob) => {
     // Send `blob` to backend

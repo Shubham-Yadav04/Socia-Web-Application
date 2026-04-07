@@ -514,6 +514,26 @@ console.log("request to follow user received ", userId, profileId);
     });
   }
 };
+export const unfollowUser_UpdateFollowing=async(req,res)=>{
+  const userId = req.params.userId;
+  const profileId = req.body.profileId; 
+  try {
+     const updateOthers_Followers = await userModel.updateOne(
+      { _id: profileId },
+      { $pull: { followers: userId } }
+    );
+
+    res.status(200).json({
+      message: "Unfollow successful",
+      updateFollowings,
+      updateOthers_Followers
+    });
+  }
+  catch(e){
+console.log(err);
+throw err;
+  }
+}
 
 export const getAllUsers = async (req, res) => {
   const users = await userModel.find(); // it will give all the users

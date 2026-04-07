@@ -19,6 +19,7 @@ routes.post('/follow/:userId',followUser)
 //  followings routes
 
 routes.get('/followings/:id', getUserFollowings)
+routes.post('/unfollow/:userId',unfollowUser_UpdateFollowing)
 
 
 //  followers Routes 

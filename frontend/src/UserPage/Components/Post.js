@@ -27,6 +27,7 @@ function Post(props) {
     comments,
     sharesCount,
   } = props.post;
+  console.log("user ", props.post)
 const profileId=props.post.user._id
 const username=props.post.user.username;
 const avatar=props.post.user.avatar

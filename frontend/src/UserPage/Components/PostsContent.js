@@ -15,8 +15,7 @@ const result= await axios.get('http://localhost:8585/post/random',{
       
       if(result.status===200){
        console.log("random posts ",result.data.randomPosts)
-        setRandomPosts(result.data.randomPosts);
-       
+        setRandomPosts(prev => [...prev,...result.data.randomPosts]);
       }
       }
       catch(error){
@@ -24,7 +23,7 @@ const result= await axios.get('http://localhost:8585/post/random',{
         setError(true);
       }
     }
-    getRandomPosts();
+    getRandomPosts(); 
   },[]);
 
   const defalut_content = [
@@ -126,7 +125,9 @@ const result= await axios.get('http://localhost:8585/post/random',{
   return (
    <div className="space-y-4 w-full px-2 flex flex-col gap-2 ">
           {
-            randomPosts.length>0?randomPosts:defalut_content.map((post,idx)=>(
+            randomPosts.length>0?randomPosts.map((post,idx)=>(
+              <Post key={idx} post={post}/>
+            )):defalut_content.map((post,idx)=>(
               <Post key={idx} post={post}/>
             )
             )

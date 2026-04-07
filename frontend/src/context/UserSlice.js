@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+
 // login krte hi user store hoga uski posts and all
 
 const UserSlice= createSlice({
@@ -37,11 +38,13 @@ state.posts.push(action.payload)
          updateFollowings:(state,action)=>{
             state.user.followings.push(action.payload.profileId);
         },
+        unfollow:(state,action)=>{
+state.user.followings=state.user.followings.filter((id)=>id!==action.payload.profileId)
+        },
         updateProfilePicture:(state,action)=>{
             state.user.avatar=action.payload;
         }
     }
-
 
 })
 

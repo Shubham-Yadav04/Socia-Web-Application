@@ -24,8 +24,25 @@ setFollowed(true);
         console.log(error.message);
     }
     }
+     const handleUnfollow=async()=>{
+        //console.log("unfollowing the user ")
+
+    try {
+        const result= await follow(user._id,profileId);
+        if(result===200){
+            console.log("unfollowed the user successfully ");
+dispatch(updateFollowings({profileId}));
+        }
+        
+setFollowed(false);
+    } catch (error) {
+        console.log(error.message);
+    }
+    }
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 flex flex-col md:flex-row items-center md:items-start w-[100px] md:w-[250px]  max-w-xs  transition-colors gap-2 h-fit">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 flex flex-col md:flex-row items-center md:items-start w-[100px] md:w-[250px]  max-w-xs  transition-colors gap-2 h-fit"
+        onClick={()=>window.location.href="/profile/"+profileId}
+        >
             <img
                 src={profileImg}
                 alt={`${username}'s profile`}
@@ -36,8 +53,12 @@ setFollowed(true);
                 {username}
             </span>
             <button
-                onClick={()=>handleFollow()}
-                className={`px-2 bg-blue-600 text-[8px] text-white rounded-full hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-800 ${followed ? "bg-gray-400 cursor-not-allowed" : ""}`}
+                onClick={(e)=>{
+                    e.stopPropagation();
+                    if(followed) handleUnfollow();
+                    else handleFollow();
+                }}
+                className={`px-2 bg-blue-600 text-[8px] text-white rounded-full hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-800 ${followed ? "bg-gray-400 " : ""}`}
             >
                 {followed ? "Following" : "Follow"}
             </button>

@@ -1,4 +1,4 @@
-import {motion, reverseEasing} from "motion/react"
+import {motion} from "motion/react"
 import Features from "./Features.js";
 function Section3() {
   

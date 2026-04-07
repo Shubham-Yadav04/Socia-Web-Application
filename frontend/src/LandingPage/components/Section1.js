@@ -64,9 +64,9 @@ function Section1() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="w-full md:w-1/2 relative"
         >
-          <div className="relative z-20 overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <div className="relative z-20 overflow-hidden rounded-3xl  shadow-2xl">
             <motion.img 
-              src="\images\social-media-social-networking-technology-connection-concept-73271333.webp" 
+              src="\images\social-media.png" 
               alt="Community Connection"
               className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
               initial={{ scale: 1 }}
