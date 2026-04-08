@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useState } from "react";
 import Profile from "../svgs/Profile";
 import Post from "./Post";
@@ -8,26 +8,41 @@ import {  Pencil } from "lucide-react";
 import useContentContext from "../../context/ContentContext";
 import { AnimatePresence ,motion} from "motion/react";
 import UpdateProfile from "./UpdateProfile";
-function ProfileSection() {
+function ProfileSection({id}) {
   const [activeTab, setActiveTab] = useState("posts");
   const [profileChangeSection, setProfileChangeSection] = useState(false);
   const {profileMenu,setProfileMenu}=useContentContext();
   const {viewProfile,setViewProfile,profilePreview,setProfilePreview} =useContentContext();
   const user = useSelector((state) => state.user.user);
-  const posts = useSelector((state) => state.user.posts);
+  const userPosts = useSelector((state) => state.user.posts);
   function formatDate(isoString) {
     const date = new Date(isoString);
     const options = { day: "numeric", month: "long", year: "numeric" };
     return date.toLocaleDateString("en-US", options);
   }
 
+const [currentProfile, setCurrentProfile] = useState(null);
+  const fetchProfile= useCallback(async(id)=>{
+   return await fetch(`/users/id/${id}`).then(res=>res.json());
+  },[])
+const isOwnProfile = id === user._id;
+useEffect(() => {
+  if (isOwnProfile) {
+    setCurrentProfile({ profile: user, posts: userPosts });
+    return;
+  }
 
+  const loadProfile = async () => {
+    const data = await fetchProfile(id);
+    setCurrentProfile(data);
+  };
 
+  loadProfile();
+}, [id, user, userPosts, isOwnProfile, fetchProfile]);
   const handleCroppedImage = (blob) => {
     // Send `blob` to backend
     const formData = new FormData();
     formData.append("profileImage", blob, "profile.png");
-    // fetch("/api/upload", { method: "POST", body: formData });
 setProfilePreview(null)
   };
 
@@ -36,8 +51,11 @@ setProfilePreview(null)
 
   const handleDetailEdit = () => {};
   return (
-    <div className=" w-full p-3 text-gray-800 dark:text-gray-100 relative " onClick={(e)=>{e.stopPropagation()
+    <div className=" w-full p-3 text-gray-800 dark:text-gray-100 relative " onClick={(e)=>{
+      if(isOwnProfile){
       setProfileChangeSection(false)
+      setProfileMenu(false)
+      }
       setViewProfile(false)
     }}>
 
@@ -45,11 +63,13 @@ setProfilePreview(null)
     {
 profilePreview && 
 <div className="h-fit w-full absolute inset-0 flex justify-center items-center bg-gray-800 z-30">
+=
   <UpdateProfile file={profilePreview} onCropped={handleCroppedImage} />
+ 
   </div>
     }
     {
-      viewProfile && <motion.div className="w-full h-screen absolute top-0 bg-black bg-opacity-30 z-20 flex items-center justify-center" onClick={(e)=>{
+      viewProfile && <motion.div className="w-full h-screen absolute top-0 bg-black bg-opacity-30 z-20 flex items-center justify-center bg-red-300" onClick={(e)=>{
       setViewProfile(false)  
       }
       }
@@ -71,8 +91,8 @@ profilePreview &&
 
         <div className=" w-[50%] h-[60%] mx-auto flex items-center justify-center ">
           {
-            user.avatar?
-            <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+            currentProfile.avatar?
+            <img src={currentProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
             :
             <Profile height={"100%"} width={"100%"} />
           }
@@ -84,19 +104,15 @@ profilePreview &&
     
       <div className="flex flex-wrap items-start gap-4">
         <div
-          className=" w-[80px] md:w-[120px] relative "
-          onMouseEnter={() => setProfileChangeSection(true)}
-          onMouseLeave={(e)=>{
-            e.stopPropagation();
-            if(profileMenu===false){
-setProfileChangeSection(false)
-            }
-            
-                    }}
+          className=" w-[80px] md:w-[120px] relative"
+          onMouseEnter={() => {if(isOwnProfile) setProfileChangeSection(true)}}
+          onMouseLeave={()=>{
+            if(isOwnProfile) {setProfileChangeSection(false)
+          }}}
         >
-          {user.avatar ? (
+          {currentProfile!==null && currentProfile.avatar? (
             <img
-              src={user.avatar}
+              src={currentProfile.avatar}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover"
             />
@@ -104,13 +120,13 @@ setProfileChangeSection(false)
             <Profile width={'100%'} height={120} />
           )}
           {profileChangeSection && (
-            <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-black rounded-full flex items-center justify-center z-10 "
+            <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-black rounded-full flex items-center justify-center z-10   cursor-pointer"
             onClick={(e)=>{
+              setProfileMenu(prev=>!prev);
               e.stopPropagation();
-              setProfileMenu(true);
             }}
             >
-              <h1 className="text-center w-1/2 text-sm text-gray-200">Change Profile</h1>
+              <h1 className="text-center w-1/2 text-sm text-gray-200 text-blue-300">Change Profile</h1>
             </div>
           )}
           <AnimatePresence>
@@ -135,18 +151,18 @@ setProfileChangeSection(false)
           <div className="flex gap-6 text-sm mt-2 text-gray-500 dark:text-gray-400">
             <span>
               <strong>
-                {user.followers.length > 0 ? user.followers.length : 0}
+                {currentProfile &&currentProfile.profile.followers.length > 0 ? currentProfile.profile.followers.length : 0}
               </strong>{" "}
               Followers
             </span>
             <span>
               <strong>
-                {user.following.length > 0 ? user.following.length : 0}
+                {currentProfile && currentProfile.profile.following.length > 0 ? currentProfile.profile.following.length : 0}
               </strong>{" "}
               Following
             </span>
             <span>
-              <strong>{posts ? posts.length : 0}</strong> Posts
+              <strong>{currentProfile ? currentProfile.posts.length : 0}</strong> Posts
             </span>
           </div>
         </div>
@@ -178,20 +194,20 @@ setProfileChangeSection(false)
       <div className="mt-4">
         {activeTab === "posts" ? (
           <div className="w-full flex flex-col gap-2">
-            {posts?.map((post, index) => (
+            {currentProfile && currentProfile.posts?.map((post, index) => (
               <Post key={index} post={post} />
             ))}
           </div>
         ) : (
           <div className="text-sm space-y-1">
             <p>
-              <strong>Name:</strong> {user.fullname}
+              <strong>Name:</strong> {currentProfile.profile.fullname}
             </p>
             <p>
-              <strong>Email:</strong> {user.email}
+              <strong>Email:</strong> {currentProfile.profile.email}
             </p>
             <p>
-              <strong>Joined:</strong> {formatDate(user.createdAt)}
+              <strong>Joined:</strong> {formatDate(currentProfile.profile.createdAt)}
             </p>
           </div>
         )}

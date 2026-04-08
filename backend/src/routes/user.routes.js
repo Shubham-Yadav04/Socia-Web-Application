@@ -5,6 +5,7 @@ import { changeEmail, changePassword, deleteUserAccount, followUser, getAllPosts
 import { loginCheckerMiddleware } from "../Middlewares/loginChecker.middleware.js";
 import { refreshAccessToken } from "../utils/refreshAccessToken.js";
 import { Logout } from "../controllers/logOut.js";
+import { unfollowUser_UpdateFollowing } from "../controllers/user.controller.js";
 const routes = Router()
 
 // get user by using username ,id ,or email

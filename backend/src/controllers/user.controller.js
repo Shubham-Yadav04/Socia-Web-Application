@@ -106,10 +106,31 @@ export const getUserByEmail = async (req, res) => {
 };
 //  by id
 export const getUserById = async (req, res) => {
-  const user = await userModel.findById(req.params.id, userProjection);
-  if (user) {
+  const user = await userModel.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.params.id)
+      }
+    },
+    {
+      $lookup: {
+        from: "posts",
+        localField: "userPosts",
+        foreignField: "_id",
+        as: "userPosts"
+      }
+    },
+    {
+      $project: {
+        "userPosts.user": 0   // remove user field inside posts
+      }
+    }
+  ]);
+
+  if (user.length > 0) {
     return res.status(200).json(user);
   }
+
   return res.status(404).json({
     message: "No such user exists",
   });

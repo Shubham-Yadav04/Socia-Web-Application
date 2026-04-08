@@ -7,10 +7,11 @@ import { useEffect } from 'react';
 import ExploreSection from './ExploreSection';
 import ChatList from './ChatList';
 import Setting from './Setting';
+import { useSelector } from 'react-redux';
 
 function Content() {
   const {view,asideView} = useContentContext();
-
+const user= useSelector(state=> state.user.user)
 useEffect(()=>{
   console.log(view);
 },[view])
@@ -19,7 +20,7 @@ useEffect(()=>{
     {view===1 && <PostsContent/> }
    {view===2 && <ExploreSection/>}
    {view===3 && <CreatePost/>}
-   {view===5 && <ProfileSection/>}
+   {view===5 && <ProfileSection id={user._id} />}
    {view===6 && <ChatList/>}
    {view===7 && <Setting/>}
    

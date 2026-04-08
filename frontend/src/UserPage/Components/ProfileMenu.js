@@ -13,7 +13,7 @@ function ProfileMenu() {
 
   return (
    
-      <motion.div className="absolute top-10 -right-[150%] mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg z-10 texr-xs md:text-sm"
+      <motion.div className="absolute top-10 -right-[150%] mt-2 w-48 bg-white dark:bg-gray-800 dar border border-gray-300 dark:border-gray-700 rounded-md shadow-lg z-10 texr-xs md:text-sm"
       initial={{
         scale:0,
         opacity:0
