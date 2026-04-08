@@ -107,28 +107,73 @@ export const getUserByEmail = async (req, res) => {
 //  by id
 export const getUserById = async (req, res) => {
   const user = await userModel.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(req.params.id)
-      }
-    },
-    {
-      $lookup: {
-        from: "posts",
-        localField: "userPosts",
-        foreignField: "_id",
-        as: "userPosts"
-      }
-    },
-    {
-      $project: {
-        "userPosts.user": 0   // remove user field inside posts
-      }
+   {
+    $match: {
+      _id: new mongoose.Types.ObjectId(req.params.id)
     }
+  },
+  {
+    $lookup: {
+      from: "posts",
+      localField: "userPosts",
+      foreignField: "_id",
+      as: "userPosts"
+    }
+  },
+
+  // 👇 Break posts array
+  { $unwind: "$userPosts" },
+
+  // 👇 Lookup user inside each post
+  {
+    $lookup: {
+      from: "users",
+      localField: "userPosts.user",
+      foreignField: "_id",
+      as: "userPosts.user"
+    }
+  },
+
+  // 👇 Convert user array → object
+  {
+    $unwind: "$userPosts.user"
+  },
+
+  // 👇 Group back posts into array
+  {
+    $group: {
+      _id: "$_id",
+      username: { $first: "$username" },
+      userPosts: { $push: "$userPosts" }
+    }
+  },
+
+  {
+    $project: {
+    //   "userPosts._id": 1,
+    // "userPosts.caption": 1,
+    // "userPosts.media": 1,
+    // "userPosts.textContent": 1,
+    // "userPosts.likes": 1,
+    // "userPosts.comments": 1,
+    // "userPosts.commentsCount": 1,
+    // "userPosts.sharesCount": 1,
+    // "userPosts.createdAt": 1,
+    // "userPosts.updatedAt": 1,
+
+    // only selected user fields
+    "userPosts.user.userPosts": 0,
+    "userPosts.user.comments": 0,
+    "userPosts.user.followers": 0,
+    "userPosts.user.following": 0,
+    "userPosts.user.likedPosts": 0,
+    "userPosts.user.password": 0,
+    }
+  }
   ]);
 
   if (user.length > 0) {
-    return res.status(200).json(user);
+    return res.status(200).json(user[0]);
   }
 
   return res.status(404).json({
