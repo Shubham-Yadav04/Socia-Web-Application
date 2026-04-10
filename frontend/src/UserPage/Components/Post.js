@@ -1,4 +1,4 @@
-
+import React from "react";
 import Pencil from "../svgs/Pencil";
 import Trash from "../svgs/Trash";
 import Heart from "../svgs/Heart";
@@ -10,12 +10,13 @@ import CommentIcon from "../svgs/CommentIcon.js";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { deletePost, updateFollowings } from "../../context/UserSlice.js";
+import { deletePost } from "../../context/UserSlice.js";
 import { useSelector } from "react-redux";
 import {motion} from 'motion/react'
 import axios from 'axios'
-import { follow, unfollow } from "../Functions/Follow.js";
+
 import useContentContext from "../../context/ContentContext.js";
+import FollowButton from "./FollowButton.js";
 
 function Post(props) {
 
@@ -45,8 +46,7 @@ const avatar=props.post.user.avatar
 const [postDelete,setPostDelete]=useState(false)
   const [shareTo, setShareTo] = useState([]); // it will have the list of the chatroom where user wants to send the posts
   const user = useSelector((state) => state.user.user);
-  const friends= user.following || []
-   const [followed, setFollwed] = useState(friends.includes(profileId) || false);
+  const friends= user.followings || [];
   const dispatch = useDispatch();
   const backendUrl= process.env.REACT_APP_BACKEND_URL;
   const updateLike = () => {
@@ -73,20 +73,6 @@ const [postDelete,setPostDelete]=useState(false)
     setCommentCount((prev) => prev + 1);
     setCommentText("");
   };
-
-  const handleFollow=async()=>{
-        try {
-            const result= await follow(user._id,profileId);
-            if(result===200){
-                console.log("followed the user successfully ");
-    dispatch(updateFollowings({profileId}));
-    setFollwed(true)
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-  }
-
   const onEdit = () => {};
   const onDelete = async () => {
     
@@ -161,24 +147,7 @@ const [postDelete,setPostDelete]=useState(false)
           )}
           <h2 className="font-bold text-sm flex flex-col p-1">
             @{username}
-            <button
-              className={`w-fit px-1  rounded-md text-[8px] font-medium text-white ${
-                followed ? "bg-gray-600" : "bg-blue-600" 
-
-              }  ${profileId===user._id?"hidden":""}` }
-              onClick={(e) =>{
-                if(followed){
-                  unfollow(user._id,profileId);
-                }
-                else follow(user._id,profileId);
-                setFollwed((prev) => (prev === true ? false : true)) 
-               
-              e.stopPropagation();}
-              }
-              disabled={followed===true}
-            > 
-              {followed ? "UnFollow" : "Follow"}
-            </button>
+            <FollowButton profileId={profileId} />
           </h2>
         </div>
         <div className="flex gap-2">

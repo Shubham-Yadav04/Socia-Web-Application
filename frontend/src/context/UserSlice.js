@@ -9,6 +9,8 @@ const UserSlice= createSlice({
         user:null,
         posts:[],
         loading:false,
+        followers:[],
+        followings:[]
     },
     reducers:{
         setUser:(state,action)=>{
@@ -33,16 +35,18 @@ state.posts.push(action.payload)
         }
         ,
         updateFollowers:(state,action)=>{
-            state.user.followers.push(action.payload.profileId);
+            state.followers.push(action.payload.profileId);
             
         },
          updateFollowings:(state,action)=>{
-            state.user.followings.push(action.payload.profileId);
-            state.user.followingCount+=1;
-        },
-        unfollow:(state,action)=>{
-state.user.followings=state.user.followings.filter((id)=>id!==action.payload.profileId)
-state.user.followingCount-=1;
+            if(action.payload.isFollow){
+state.followings.push(action.payload.profileId);
+            
+            }
+            else{
+                state.followings=state.followings.filter((id)=>id!==action.payload.profileId);
+            }
+            
         },
         updateProfilePicture:(state,action)=>{
             state.user.avatar=action.payload;

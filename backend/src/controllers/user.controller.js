@@ -583,9 +583,9 @@ export const unfollowUser_UpdateFollowing=async(req,res)=>{
       updateFollowings,
       updateOthers_Followers
     });
-  }
+  } 
   catch(e){
-console.log(err);
+console.log(e);
 throw err;
   }
 }
