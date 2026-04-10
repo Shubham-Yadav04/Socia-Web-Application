@@ -9,8 +9,10 @@ import useContentContext from "../../context/ContentContext";
 import Setting from "../svgs/Setting";
 import Logout from "../svgs/Logout";
 import { logout } from "../Functions/Logout";
+import { useSelector } from "react-redux";
 function SideBar() {
-  const { setView ,setAsideView} = useContentContext();
+  const { setView ,setAsideView,setProfileInView} = useContentContext();
+  const user = useSelector((state) => state.user.user);
   const navigate=useNavigate();
   const containerVariants = {
     hidden: {},
@@ -27,14 +29,16 @@ function SideBar() {
     show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
   };
   const listItems = [
-    { icon: <HomeIcon />, label: "Home", handleClick: () => setView(1) },
-    { icon: <Search />, label: "Explore", handleClick: () => setView(2) },
-    { icon: <AddPost />, label: "Post", handleClick: () => setView(3) },
+    { icon: <HomeIcon />, label: "Home", handleClick: () => setView("home") },
+    { icon: <Search />, label: "Explore", handleClick: () => setView("search") },
+    { icon: <AddPost />, label: "Post", handleClick: () => setView("post") },
     { icon: <Message />, label: "Messages", handleClick: () =>{
-       if(window.innerWidth<768) setView(6)
+       if(window.innerWidth<768) setView("messages")
       setAsideView(2)
     } },
-    { icon: <Profile />, label: "Profile", handleClick: () => setView(5) },
+    { icon: <Profile />, label: "Profile", handleClick: () => {
+      setProfileInView(user._id);
+      setView("profile")} },
   ];
   return (
     <div className="w-full md:w-fit h-fit md:h-[93%] flex md:flex-col md:justify-between md:border-r dark:border-gray-700 fixed bottom-0 z-20 md:left-0 md:top-[44px] md:pb-5">

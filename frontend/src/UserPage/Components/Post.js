@@ -14,9 +14,11 @@ import { deletePost, updateFollowings } from "../../context/UserSlice.js";
 import { useSelector } from "react-redux";
 import {motion} from 'motion/react'
 import axios from 'axios'
-import { follow } from "../Functions/Follow.js";
+import { follow, unfollow } from "../Functions/Follow.js";
+import useContentContext from "../../context/ContentContext.js";
 
 function Post(props) {
+
   const {
     _id,
     caption,
@@ -27,12 +29,10 @@ function Post(props) {
     comments,
     sharesCount,
   } = props.post;
-  console.log("user ", props.post)
 const profileId=props.post.user._id
 const username=props.post.user.username;
 const avatar=props.post.user.avatar
   //   props.comments --- it will replace the commentList
-
   const [likeCount, setLikeCount] = useState(likes || 0);
   const [commentCount, setCommentCount] = useState(commentsCount || 0);
   const [shareCount, setShareCount] = useState(sharesCount || 0);
@@ -40,7 +40,7 @@ const avatar=props.post.user.avatar
   const [commentSection, setCommentSection] = useState(false);
   const [commentList, setCommentList] = useState(comments);
   const [commentText, setCommentText] = useState("");
- 
+ const {setProfileInView,setView}= useContentContext();
   const [share, setShare] = useState(false);
 const [postDelete,setPostDelete]=useState(false)
   const [shareTo, setShareTo] = useState([]); // it will have the list of the chatroom where user wants to send the posts
@@ -48,6 +48,7 @@ const [postDelete,setPostDelete]=useState(false)
   const friends= user.following || []
    const [followed, setFollwed] = useState(friends.includes(profileId) || false);
   const dispatch = useDispatch();
+  const backendUrl= process.env.REACT_APP_BACKEND_URL;
   const updateLike = () => {
  
     if (isPostLiked) {
@@ -92,7 +93,7 @@ const [postDelete,setPostDelete]=useState(false)
     // fire a backend request to remove the post on success remove it from the state also
     const password= prompt("Enter your password to delete the post");
     try {
-       const deleteResult= await axios.delete(`http://localhost:8585/post/delete/${_id}`,{
+       const deleteResult= await axios.delete(`${backendUrl}post/delete/${_id}`,{
       data: { password },
   withCredentials: true 
     });
@@ -148,7 +149,11 @@ const [postDelete,setPostDelete]=useState(false)
   return (
     <article className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow md:w-[80%] w-full  mx-auto my-4 relative">
       <div className="flex items-center justify-between mb-2">
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center" onClick={()=> {
+          setProfileInView(profileId);
+          setView("profile");
+
+        }}>
           {avatar? (
             <img alt="profilepic" src={avatar} className="w-10 h-10 object-cover rounded-full"></img>
           ) : (
@@ -161,9 +166,14 @@ const [postDelete,setPostDelete]=useState(false)
                 followed ? "bg-gray-600" : "bg-blue-600" 
 
               }  ${profileId===user._id?"hidden":""}` }
-              onClick={() =>{
-                setFollwed((prev) => (prev === true ? false : true))
-                handleFollow()}
+              onClick={(e) =>{
+                if(followed){
+                  unfollow(user._id,profileId);
+                }
+                else follow(user._id,profileId);
+                setFollwed((prev) => (prev === true ? false : true)) 
+               
+              e.stopPropagation();}
               }
               disabled={followed===true}
             > 

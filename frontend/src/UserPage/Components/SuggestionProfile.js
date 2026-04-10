@@ -2,14 +2,14 @@ import React from "react";
 import { follow } from "../Functions/Follow";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFollowers, updateFollowings } from "../../context/UserSlice";
-import { useNavigate } from "react-router-dom";
+import useContentContext from "../../context/ContentContext";
 
 const SuggestionProfile = ({profileId, profileImg, username }) => {
 const user= useSelector(state=>state.user.user)
 console.log("suggestion profile user ",user)
 const friends= user.following || []
 const dispatch=useDispatch()
-const navigate =useNavigate();
+const {setProfileInView, setView}=useContentContext();
 const [followed,setFollowed]=React.useState(friends.includes(profileId))// if the user is already following the profile then set it to true;
     const handleFollow=async()=>{
         //console.log("following the user ")
@@ -43,7 +43,10 @@ setFollowed(false);
     }
     return (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 flex flex-col md:flex-row items-center md:items-start w-[100px] md:w-[250px]  max-w-xs  transition-colors gap-2 h-fit"
-        onClick={()=>navigate("/user/"+profileId)}
+        onClick={()=>{
+            setProfileInView(profileId);
+            setView("profile");
+        }}
         >
             <img
                 src={profileImg}

@@ -150,17 +150,6 @@ export const getUserById = async (req, res) => {
 
   {
     $project: {
-    //   "userPosts._id": 1,
-    // "userPosts.caption": 1,
-    // "userPosts.media": 1,
-    // "userPosts.textContent": 1,
-    // "userPosts.likes": 1,
-    // "userPosts.comments": 1,
-    // "userPosts.commentsCount": 1,
-    // "userPosts.sharesCount": 1,
-    // "userPosts.createdAt": 1,
-    // "userPosts.updatedAt": 1,
-
     // only selected user fields
     "userPosts.user.userPosts": 0,
     "userPosts.user.comments": 0,

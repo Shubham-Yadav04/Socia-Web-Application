@@ -8,6 +8,7 @@ profileId
        },{
               withCredentials: true
        });
+       console.log("follow response",response);
        return response.status;
    } catch (error) {
        console.error("Error following user:", error);

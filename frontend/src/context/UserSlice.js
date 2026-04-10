@@ -34,12 +34,15 @@ state.posts.push(action.payload)
         ,
         updateFollowers:(state,action)=>{
             state.user.followers.push(action.payload.profileId);
+            
         },
          updateFollowings:(state,action)=>{
             state.user.followings.push(action.payload.profileId);
+            state.user.followingCount+=1;
         },
         unfollow:(state,action)=>{
 state.user.followings=state.user.followings.filter((id)=>id!==action.payload.profileId)
+state.user.followingCount-=1;
         },
         updateProfilePicture:(state,action)=>{
             state.user.avatar=action.payload;

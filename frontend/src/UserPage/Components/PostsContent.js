@@ -1,29 +1,30 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import Post from './Post'
 import axios from 'axios';
-import { useEffect,useState } from 'react';
+import { useEffect,useState,useRef } from 'react';
 function PostsContent() {
  const [randomPosts,setRandomPosts]=useState([]);
  const [error,setError]=useState(false);
   useEffect(()=>{
-    const getRandomPosts=async()=>{
-      
+    const getRandomPosts= async()=>{
       try{
 const result= await axios.get('http://localhost:8585/post/random',{
         withCredentials:true
       })
       
       if(result.status===200){
-       console.log("random posts ",result.data.randomPosts)
-        setRandomPosts(prev => [...prev,...result.data.randomPosts]);
+      //  console.log("random posts ",result.data.randomPosts)
+        setRandomPosts([...result.data.randomPosts]);
+        
       }
       }
       catch(error){
         console.log("error occured ")
         setError(true);
+        
       }
     }
-    getRandomPosts(); 
+  getRandomPosts(); 
   },[]);
 
   const defalut_content = [

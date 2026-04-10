@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import Profile from "../svgs/Profile";
 import Post from "./Post";
@@ -8,11 +8,11 @@ import {  Pencil } from "lucide-react";
 import useContentContext from "../../context/ContentContext";
 import { AnimatePresence ,motion} from "motion/react";
 import UpdateProfile from "./UpdateProfile";
-function ProfileSection({id}) {
+function ProfileSection() {
   const [activeTab, setActiveTab] = useState("posts");
   const [profileChangeSection, setProfileChangeSection] = useState(false);
   const {profileMenu,setProfileMenu}=useContentContext();
-  const {viewProfile,setViewProfile,profilePreview,setProfilePreview} =useContentContext();
+  const {viewProfile,setViewProfile,profilePreview,setProfilePreview,profileInView} =useContentContext();
   const user = useSelector((state) => state.user.user);
   const userPosts = useSelector((state) => state.user.posts);
   function formatDate(isoString) {
@@ -23,32 +23,32 @@ function ProfileSection({id}) {
 
 const [currentProfile, setCurrentProfile] = useState(null);
   const fetchProfile= useCallback(async(id)=>{
-   return await fetch(`/users/id/${id}`).then(res=>res.json());
+   const res= await fetch(`http://localhost:8585/users/id/${id}`).then(res=>res.json());
+   return res;
   },[])
-const isOwnProfile = id === user._id;
+const isOwnProfile = profileInView === user._id;
 useEffect(() => {
   if (isOwnProfile) {
     setCurrentProfile({ profile: user, posts: userPosts });
     return;
   }
-
-  const loadProfile = async () => {
+  const loadProfile = async (id) => {
     const data = await fetchProfile(id);
-    setCurrentProfile(data);
+    // console.log("fetched profile data ",data)
+    const profile=data
+    const posts= data.userPosts;  
+    setCurrentProfile({profile,posts:posts});
   };
 
-  loadProfile();
-}, [id, user, userPosts, isOwnProfile, fetchProfile]);
+  loadProfile(profileInView);
+}, [profileInView, user, userPosts, isOwnProfile, fetchProfile]);
   const handleCroppedImage = (blob) => {
     // Send `blob` to backend
     const formData = new FormData();
     formData.append("profileImage", blob, "profile.png");
 setProfilePreview(null)
   };
-
-  // handling crop ended 
-
-
+  // console.log("current profile ",currentProfile)
   const handleDetailEdit = () => {};
   return (
     <div className=" w-full p-3 text-gray-800 dark:text-gray-100 relative " onClick={(e)=>{
@@ -91,8 +91,8 @@ profilePreview &&
 
         <div className=" w-[50%] h-[60%] mx-auto flex items-center justify-center ">
           {
-            currentProfile.avatar?
-            <img src={currentProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
+            currentProfile.profile?
+            <img src={currentProfile.profile.avatar} alt="Profile" className="w-full h-full object-cover" />
             :
             <Profile height={"100%"} width={"100%"} />
           }
@@ -144,25 +144,27 @@ profilePreview &&
             className="w-fit h-fit hover:rounded-sm  hover:bg-gray-200 dark:hover:bg-gray-800 absolute top-2 right-6 p-1"
             onClick={handleDetailEdit}
           >
-            <Pencil stroke="#3777db" width={15} height={15} />
+            {isOwnProfile && (
+              <Pencil stroke="#3777db" width={15} height={15} />
+            )}
           </div>
-          <h2 className="text-lg font-semibold">{user.username}</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-300">{user.bio}</p>
+          <h2 className="text-lg font-semibold">{currentProfile?.profile?.username}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{currentProfile?.profile?.bio}</p>
           <div className="flex gap-6 text-sm mt-2 text-gray-500 dark:text-gray-400">
             <span>
               <strong>
-                {currentProfile &&currentProfile.profile.followers.length > 0 ? currentProfile.profile.followers.length : 0}
+                {currentProfile?.profile?.followersCount || 0}
               </strong>{" "}
               Followers
             </span>
             <span>
               <strong>
-                {currentProfile && currentProfile.profile.following.length > 0 ? currentProfile.profile.following.length : 0}
+                {currentProfile?.profile?.follwingsCount || 0}
               </strong>{" "}
               Following
             </span>
             <span>
-              <strong>{currentProfile ? currentProfile.posts.length : 0}</strong> Posts
+              <strong >{currentProfile?.posts?.length || 0} </strong> Posts
             </span>
           </div>
         </div>
@@ -201,13 +203,13 @@ profilePreview &&
         ) : (
           <div className="text-sm space-y-1">
             <p>
-              <strong>Name:</strong> {currentProfile.profile.fullname}
+              <strong>Name:</strong> {currentProfile?.profile?.fullname}
             </p>
             <p>
-              <strong>Email:</strong> {currentProfile.profile.email}
+              <strong>Email:</strong> {currentProfile?.profile?.email}
             </p>
             <p>
-              <strong>Joined:</strong> {formatDate(currentProfile.profile.createdAt)}
+              <strong>Joined:</strong> {formatDate(currentProfile?.profile?.createdAt)}
             </p>
           </div>
         )}
