@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion,AnimatePresence } from "motion/react";
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef } from "react";
 import axios from "axios" 
 
 
@@ -9,10 +9,17 @@ function NavBar() {
   const [menu, setMenu] = useState(false);
   const [signup, setSignup] = useState(false);
   const [signin, setSignin] = useState(false);
-  const [form, setForm] = useState({});
+
   const [formError, setFormError] = useState("");
  const navigate = useNavigate();
+const signinUsernameRef = useRef();
+const signinPasswordRef = useRef();
 
+const signupUsernameRef = useRef();
+const signupFullnameRef = useRef();
+const signupEmailRef = useRef();
+const signupPasswordRef = useRef();
+const signupConfirmPasswordRef = useRef();
   const navItems = [
     { name: "About", href: "/about" },  
     { name: "Contact Us", href: "/contact" },
@@ -69,61 +76,66 @@ function NavBar() {
     setMenu(prev => !prev);
   };
 
-  const handleSignin=async(e)=>{
-    e.preventDefault()
-     setFormError("")
-    try{
-        const result= await axios.post("http://localhost:8585/users/login",
-      form,
-      {
-  withCredentials: true
-}
-    )
-
-    
-    if(result.status===200){
-      console.log(result)
-      setForm({})
-      navigate("/dashboard")
-    }
-    }
-    catch(error){
-console.log(error)
-    
-  if (error.response) {
-    const status = error.response.status;
-    console.log(status)
-
-    if (status === 402)  setFormError("Invalid username and password");
-    if (status === 404)  setFormError("User does not exist");
-  
-  } else {
-   
-    setFormError("Something went wrong. Please try again later.");
-  
-  }
-  setForm({})
-}}
-  const handleSignup=async(e)=>{
-   
+  const handleSignin = async (e) => {
   e.preventDefault();
-  setFormError("")
-console.log("signup");
-  if (form.password && form.confirmPassword) {
-    if (form.password !== form.confirmPassword) {
-      setFormError("Passwords do not match");
-      return; 
+  setFormError("");
+
+  const formData = {
+    username: signinUsernameRef.current.value,
+    password: signinPasswordRef.current.value,
+  };
+
+  try {
+    const result = await axios.post(
+      "http://localhost:8585/users/login",
+      formData,
+      { withCredentials: true }
+    );
+
+    if (result.status === 200) {
+      navigate("/dashboard");
+    }
+  } catch (error) {
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 402) setFormError("Invalid username and password");
+      if (status === 404) setFormError("User does not exist");
+    } else {
+      setFormError("Something went wrong. Please try again later.");
     }
   }
-  const result= await axios.post("http://localhost:8585/users/register" , form,{
-  withCredentials: true
-});
-  console.log(result);
-  if(result.status===200 && result.data){
-setForm({})
-navigate("/dashboard")
+};
+  const handleSignup = async (e) => {
+  e.preventDefault();
+  setFormError("");
+
+  const formData = {
+    username: signupUsernameRef.current.value,
+    fullname: signupFullnameRef.current.value,
+    email: signupEmailRef.current.value,
+    password: signupPasswordRef.current.value,
+    confirmPassword: signupConfirmPasswordRef.current.value,
+  };
+
+  if (formData.password !== formData.confirmPassword) {
+    setFormError("Passwords do not match");
+    return;
   }
+
+  try {
+    const result = await axios.post(
+      "http://localhost:8585/users/register",
+      formData,
+      { withCredentials: true }
+    );
+
+    if (result.status === 200) {
+      navigate("/dashboard");
+    }
+  } catch (err) {
+    setFormError("Signup failed");
   }
+};
   return (
     <div className="w-full flex items-center gap-3 px-3 justify-between sticky top-0 z-20 h-fit py-1 backdrop-blur-md bg-white/50 dark:bg-[#111]/70 transition-all duration-1000">
       <div className="w-fit flex items-center ">
@@ -334,10 +346,7 @@ navigate("/dashboard")
                     className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
                     required
                     autoComplete="username"
-                    value={form.username}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, username: e.target.value }))
-                    }
+                     ref={signupUsernameRef} defaultValue=""
                   />
                 
                   <label
@@ -352,10 +361,7 @@ navigate("/dashboard")
                     className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="fullname"
-                    value={form.fullname}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, fullname: e.target.value }))
-                    }
+                    ref={signupFullnameRef} defaultValue=""
                   />
              
                 
@@ -372,10 +378,7 @@ navigate("/dashboard")
                     className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="email"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, email: e.target.value }))
-                    }
+                     ref={signupEmailRef} defaultValue=""
                   />
               
               
@@ -391,10 +394,7 @@ navigate("/dashboard")
                     className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="new-password"
-                    value={form.password}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, password: e.target.value }))
-                    }
+                    ref={signupPasswordRef} defaultValue=""
                   />
             
                   <label
@@ -409,20 +409,14 @@ navigate("/dashboard")
                     className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="new-password"
-                    value={form.confirmPassword}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        confirmPassword: e.target.value,
-                      }))
-                    }
+                     ref={signupConfirmPasswordRef} defaultValue=""
                   />
                </div>
                 <div
                   id="signup-error"
                   className="text-red-500 text-xs min-h-[1.5em] w-full text-center"
                 >
-                  {form.password !== form.confirmPassword ? formError :""}
+                  {signupPasswordRef.current?.value !== signupConfirmPasswordRef.current?.value ? formError :""}
                 </div>
                 <button
                   
@@ -475,10 +469,7 @@ navigate("/dashboard")
                     className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="username"
-                    value={form.username}
-                    onChange={e =>
-                      setForm(prev => ({ ...prev, username: e.target.value }))
-                    }
+                     ref={signinUsernameRef} defaultValue=""
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -494,10 +485,7 @@ navigate("/dashboard")
                     className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                     autoComplete="current-password"
-                    value={form.password}
-                    onChange={e =>
-                      setForm(prev => ({ ...prev, password: e.target.value }))
-                    }
+                    ref={signinPasswordRef} defaultValue=""
                   />
                 </div>
                 <span className="text-xs text-red-500 w-full text-center">{formError}</span>

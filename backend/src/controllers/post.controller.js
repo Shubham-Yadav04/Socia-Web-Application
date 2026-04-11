@@ -587,8 +587,6 @@ export const sharePost= async (req,res)=>{
         })
     }
 }
-
-
 // get random posts 
 
 export const getRandomPosts=async (req,res)=>{

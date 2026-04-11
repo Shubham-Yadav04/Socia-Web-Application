@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
 import Profile from "../svgs/Profile";
 import Post from "./Post";
@@ -8,28 +8,40 @@ import {  Pencil } from "lucide-react";
 import useContentContext from "../../context/ContentContext";
 import { AnimatePresence ,motion} from "motion/react";
 import UpdateProfile from "./UpdateProfile";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { setUser } from "../../context/UserSlice";
 function ProfileSection() {
   const [activeTab, setActiveTab] = useState("posts");
   const [profileChangeSection, setProfileChangeSection] = useState(false);
   const {profileMenu,setProfileMenu}=useContentContext();
   const {viewProfile,setViewProfile,profilePreview,setProfilePreview,profileInView} =useContentContext();
   const user = useSelector((state) => state.user.user);
+  const followers=useSelector((state) => state.user.followers);
+    const following=useSelector((state) => state.user.following);
   const userPosts = useSelector((state) => state.user.posts);
   function formatDate(isoString) {
     const date = new Date(isoString);
     const options = { day: "numeric", month: "long", year: "numeric" };
     return date.toLocaleDateString("en-US", options);
   }
-
+  const dispatch=useDispatch();
+  const usernameRef= useRef(user?.username || "");
+  const bioRef= useRef(user?.bio || "");
+const [editDetail,setEditDetail]=useState(false);
 const [currentProfile, setCurrentProfile] = useState(null);
   const fetchProfile= useCallback(async(id)=>{
    const res= await fetch(`http://localhost:8585/users/id/${id}`).then(res=>res.json());
    return res;
   },[])
 const isOwnProfile = profileInView === user._id;
+console.log( "profile owner" , isOwnProfile)
 useEffect(() => {
   if (isOwnProfile) {
-    setCurrentProfile({ profile: user, posts: userPosts });
+    setCurrentProfile({ profile: user,
+      followers: followers|| [],
+      following: following || [],
+      posts: userPosts });
     return;
   }
   const loadProfile = async (id) => {
@@ -37,19 +49,53 @@ useEffect(() => {
     // console.log("fetched profile data ",data)
     const profile=data
     const posts= data.userPosts;  
-    setCurrentProfile({profile,posts:posts});
+    setCurrentProfile({profile,
+      followers: data.followers || [],
+      followings: data.following || [],
+      posts:posts});
   };
 
   loadProfile(profileInView);
-}, [profileInView, user, userPosts, isOwnProfile, fetchProfile]);
+}, [profileInView, user, userPosts, isOwnProfile, fetchProfile, followers, following]);
   const handleCroppedImage = (blob) => {
     // Send `blob` to backend
     const formData = new FormData();
     formData.append("profileImage", blob, "profile.png");
 setProfilePreview(null)
   };
-  // console.log("current profile ",currentProfile)
-  const handleDetailEdit = () => {};
+  console.log("current profile Followes" , currentProfile)
+  console.log("current profile Followings" , currentProfile?.followings)
+
+  const handleDetailEdit = async() => {
+    try {
+      console.log("eidting detail");
+    const updatedDetails = {
+      username: usernameRef.current.value,
+      bio: bioRef.current.value,
+    };
+
+    const res = await axios.put(
+      "http://localhost:8585/users/updateDetail",
+      updatedDetails,
+      { withCredentials: true }
+    );
+console.log("update details response", res);
+    if (res.status === 200) {
+      console.log( "response data ", res)
+      dispatch(setUser({
+  username: res.data.updatedFields?.username || user.username,
+  bio: res.data.updatedFields?.bio || user.bio,
+}));
+    } else {
+      alert("Failed to update details");
+    }
+
+    setEditDetail(false);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+  };
   return (
     <div className=" w-full p-3 text-gray-800 dark:text-gray-100 relative " onClick={(e)=>{
       if(isOwnProfile){
@@ -132,34 +178,49 @@ profilePreview &&
           <AnimatePresence>
           {
             
-            profileMenu && 
-            
+            profileMenu &&  
             <ProfileMenu />
             
           }
           </AnimatePresence>
         </div>
         <div className="flex-1 relative pt-3">
-          <div
+          {isOwnProfile && ( <div
             className="w-fit h-fit hover:rounded-sm  hover:bg-gray-200 dark:hover:bg-gray-800 absolute top-2 right-6 p-1"
-            onClick={handleDetailEdit}
+            onClick={()=>setEditDetail(true)}
           >
-            {isOwnProfile && (
+            {
+            !editDetail && 
               <Pencil stroke="#3777db" width={15} height={15} />
-            )}
+             
+             
+}
           </div>
+          )}
+          {editDetail && <div className="absolute inset-0 w-full h-fit p-5 bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-lg z-20"> 
+          {
+             editDetail && <h1 onClick={() => setEditDetail(false)} className="absolute top-0 right-3 cursor-pointer text-gray-500 dark:text-gray-400 font-bold text-lg">x</h1>
+          }
+            <h1 className="text-lg font-bold mb-2">Edit Profile Details</h1>
+            <div className="flex flex-col gap-2">
+              <input type="text" placeholder="Username" className="p-2  rounded bg-inherit border border-1 border-gray-600 dark:border-gray-600" defaultValue={currentProfile.profile.username} ref={usernameRef} />
+              <input type="text" maxLength={150} placeholder="Bio" className="p-2  rounded bg-inherit border border-1 border-gray-600 dark:border-gray-600" defaultValue={currentProfile.profile.bio}  ref={bioRef}/>
+              <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={()=> handleDetailEdit()
+              }>Save</button>
+            </div>
+            </div>}
           <h2 className="text-lg font-semibold">{currentProfile?.profile?.username}</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300">{currentProfile?.profile?.bio}</p>
           <div className="flex gap-6 text-sm mt-2 text-gray-500 dark:text-gray-400">
             <span>
               <strong>
-                {currentProfile?.profile?.followersCount || 0}
+                {currentProfile?.followers?.length || 0}
               </strong>{" "}
               Followers
             </span>
             <span>
               <strong>
-                {currentProfile?.profile?.follwingsCount || 0}
+                {currentProfile?.following?.length || 0}
               </strong>{" "}
               Following
             </span>

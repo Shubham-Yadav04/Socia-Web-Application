@@ -14,7 +14,7 @@ export const loginCheckerMiddleware= async (req,res,next)=>{
 
 const user = await userModel.findOne({
     username: decoded.username
-})
+},{password:0,userPosts:0,likedPosts:0,commentsList:0})
 
 req.user=user
     return next()

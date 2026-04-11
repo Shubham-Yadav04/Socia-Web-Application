@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { upload } from "../Middlewares/multer.middleware.js";
 import { loginChecker } from "../controllers/login.js";
-import { changeEmail, changePassword, deleteUserAccount, followUser, getAllPosts, getUserByEmail, getUserById, getUserByUsername, getUserFollowers, getUserFollowings, registerUser, updateAvatar, updateUsername,getAllUsers, getLoggedInUser,getRandomUserSuggestions } from "../controllers/user.controller.js";
+import { changeEmail, changePassword, deleteUserAccount, followUser, getAllPosts, getUserByEmail, getUserById, getUserByUsername, getUserFollowers, getUserFollowings, registerUser, updateAvatar, updateDetails,getAllUsers, getLoggedInUser,getRandomUserSuggestions } from "../controllers/user.controller.js";
 import { loginCheckerMiddleware } from "../Middlewares/loginChecker.middleware.js";
 import { refreshAccessToken } from "../utils/refreshAccessToken.js";
 import { Logout } from "../controllers/logOut.js";
@@ -39,7 +39,7 @@ routes.get('/suggestions',getRandomUserSuggestions)
 
 // PUT request  
 
-routes.put('/username', updateUsername)
+routes.put('/updateDetail', updateDetails)
 routes.put('/avatar', upload.single('avatar'), updateAvatar)
 routes.put('/email', changeEmail)
 routes.put('/password', changePassword)

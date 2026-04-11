@@ -50,6 +50,10 @@ const userSchema= new mongoose.Schema({
         type:String,
         required:[true,'Password is required']
     },
+    bio:{
+        type:String,
+            maxlength:150
+    },
     following:[
         {
             type: mongoose.Schema.Types.ObjectId,

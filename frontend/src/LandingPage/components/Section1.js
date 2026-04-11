@@ -64,7 +64,7 @@ function Section1() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="w-full md:w-1/2 relative"
         >
-          <div className="relative z-20 overflow-hidden rounded-3xl  shadow-2xl">
+          <div className="relative z-20 overflow-hidden rounded-3xl  ">
             <motion.img 
               src="\images\social-media.png" 
               alt="Community Connection"

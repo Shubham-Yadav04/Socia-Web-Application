@@ -106,64 +106,19 @@ export const getUserByEmail = async (req, res) => {
 };
 //  by id
 export const getUserById = async (req, res) => {
-  const user = await userModel.aggregate([
-   {
-    $match: {
-      _id: new mongoose.Types.ObjectId(req.params.id)
+  const user = await userModel.findById(req.params.id)
+  .select("-password")
+  .populate({
+    path: "userPosts",
+    populate: {
+      path: "user",
+      select: "username"
     }
-  },
-  {
-    $lookup: {
-      from: "posts",
-      localField: "userPosts",
-      foreignField: "_id",
-      as: "userPosts"
-    }
-  },
-
-  // 👇 Break posts array
-  { $unwind: "$userPosts" },
-
-  // 👇 Lookup user inside each post
-  {
-    $lookup: {
-      from: "users",
-      localField: "userPosts.user",
-      foreignField: "_id",
-      as: "userPosts.user"
-    }
-  },
-
-  // 👇 Convert user array → object
-  {
-    $unwind: "$userPosts.user"
-  },
-
-  // 👇 Group back posts into array
-  {
-    $group: {
-      _id: "$_id",
-      username: { $first: "$username" },
-      userPosts: { $push: "$userPosts" }
-    }
-  },
-
-  {
-    $project: {
-    // only selected user fields
-    "userPosts.user.userPosts": 0,
-    "userPosts.user.comments": 0,
-    "userPosts.user.followers": 0,
-    "userPosts.user.following": 0,
-    "userPosts.user.likedPosts": 0,
-    "userPosts.user.password": 0,
-    }
-  }
-  ]);
-
-  if (user.length > 0) {
-    return res.status(200).json(user[0]);
-  }
+  });
+  if (user) {
+    console.log("user with posts ", user)
+    return res.status(200).json(user);
+  } 
 
   return res.status(404).json({
     message: "No such user exists",
@@ -175,39 +130,41 @@ export const getUserById = async (req, res) => {
 // things to update in a user model are :
 // 1. full name
 
-export const updateUsername = async (req, res) => {
+export const updateDetails = async (req, res) => {
   const oldUsername = req.user.username;
-  const newUsername = req.query.username;
-  if (!newUsername || newUsername === oldUsername)
-    return res.status(400).json({
-      message: "Enter a valid username",
-    });
+  const newUsername = req.body.username;
+  const bio = req.body.bio?.trim() || undefined;
+ if (!newUsername && !bio) {
+  return res.status(400).json({
+    message: "Nothing to update",
+  });
+}
 
   try {
-    const dbUser = await userModel.findOne({ username: newUsername });
-    if (dbUser) {
-      return res.json({
-        message: "there is a user with this name use any other username",
-      });
-    }
+    const updateFields = {};
 
-    const result = await userModel.updateOne(
-      {
-        _id: req.user._id,
-      },
-      {
-        $set: {
-          username: newUsername,
-        },
-      }
-    );
-    if (result.modifiedCount > 0)
-      return res.status(200).json({
-        message: "username updated ",
-        username: newUsername,
-      });
-
-    return res.send("no user updated ");
+if (newUsername && newUsername !== oldUsername) {
+  const dbUser = await userModel.findOne({ username: newUsername });
+  if (dbUser) {
+    return res.status(400).json({
+      message: "Username already exists",
+    });
+  }
+  updateFields.username = newUsername;
+}
+console.log("bio ", bio);
+if (bio !== undefined) {
+  updateFields.bio = bio;
+}
+console.log("update fields ", updateFields);
+const result = await userModel.updateOne(
+  { _id: req.user._id },
+  { $set: updateFields }
+);
+return res.status(200).json({
+  message: "User details updated successfully",
+  updatedFields: updateFields
+});
   } catch (error) {
     return res.status(500).send("some Internal Server error occurred ");
   }
@@ -577,16 +534,22 @@ export const unfollowUser_UpdateFollowing=async(req,res)=>{
       { _id: profileId },
       { $pull: { followers: userId } }
     );
-
+const updateFollowings= await userModel.updateOne({
+  _id:userId
+},{
+  $pull:{
+    following:profileId
+  }
+})
     res.status(200).json({
       message: "Unfollow successful",
       updateFollowings,
       updateOthers_Followers
     });
   } 
-  catch(e){
-console.log(e);
-throw err;
+  catch(error){
+console.log(error);
+throw error;
   }
 }
 

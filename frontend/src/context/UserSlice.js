@@ -10,12 +10,15 @@ const UserSlice= createSlice({
         posts:[],
         loading:false,
         followers:[],
-        followings:[]
+        following:[]
     },
     reducers:{
-        setUser:(state,action)=>{
-state.user=action.payload
-        },
+        setUser:(state, action) => {
+  state.user = {
+    ...state.user,
+    ...action.payload
+  };
+},
         setPosts:(state,action)=>{
 state.posts=action.payload
         },
@@ -40,11 +43,11 @@ state.posts.push(action.payload)
         },
          updateFollowings:(state,action)=>{
             if(action.payload.isFollow){
-state.followings.push(action.payload.profileId);
+state.following.push(action.payload.profileId);
             
             }
             else{
-                state.followings=state.followings.filter((id)=>id!==action.payload.profileId);
+                state.following=state.following.filter((id)=>id!==action.payload.profileId);
             }
             
         },
