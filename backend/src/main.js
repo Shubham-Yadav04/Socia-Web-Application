@@ -5,7 +5,9 @@ import routes from './routes/user.routes.js';
 import { connectDB } from './DbRepository/Dbconnection.js';
 import { postRoutes } from './routes/post.routes.js';
 const app = express();
-
+import dotenv from 'dotenv'
+dotenv.config()
+const frontendUrl=process.env.FRONTEND_URL;
 connectDB()
 
 
@@ -20,7 +22,7 @@ app.use(express.urlencoded({
 app.use(express.json({ limit: '20Kb' }))
 app.use(express.static('public'))
 app.use(cors({
-  origin: 'http://localhost:8586',
+  origin: '${frontendUrl}',
   credentials: true
 }))
 

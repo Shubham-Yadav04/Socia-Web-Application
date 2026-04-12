@@ -32,6 +32,7 @@ const signupConfirmPasswordRef = useRef();
       ? true
       : false
   );
+  const backendUrl=process.env.BACKEND_URL;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -87,7 +88,7 @@ const signupConfirmPasswordRef = useRef();
 
   try {
     const result = await axios.post(
-      "http://localhost:8585/users/login",
+      `${backendUrl}/users/login`,
       formData,
       { withCredentials: true }
     );
@@ -124,7 +125,7 @@ const signupConfirmPasswordRef = useRef();
 
   try {
     const result = await axios.post(
-      "http://localhost:8585/users/register",
+      `${backendUrl}/users/register`,
       formData,
       { withCredentials: true }
     );

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
-import { useSelector } from "react-redux";
-import { Search, SearchCheckIcon } from "lucide-react";
+
+import { Search } from "lucide-react";
 import SuggestionProfile from "./SuggestionProfile.js";
 const ExploreSection = () => {
   const [query, setQuery] = useState("");
@@ -9,7 +9,7 @@ const ExploreSection = () => {
   const [results, setResults] = useState([]);
 const [suggestions,setSuggestions]=useState([]);
 const [error,setError] =useState(false)
-
+const backendUrl=process.env.BACKEND_URL;
   const handleSearch = () => {
     const filtered = suggestions.filter((post) =>
       post.title.toLowerCase().includes(query.toLowerCase())
@@ -23,7 +23,7 @@ const [error,setError] =useState(false)
     const getSuggestions=async()=>{
       
       try{
-const result= await axios.get('http://localhost:8585/users/suggestions',{
+const result= await axios.get(`${backendUrl}/users/suggestions`,{
         withCredentials:true
       })
       

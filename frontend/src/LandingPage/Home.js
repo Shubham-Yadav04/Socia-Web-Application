@@ -11,10 +11,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 function Home() {
  const navigate= useNavigate()
+ const backendUrl=process.env.BACKEND_URL;
   useEffect(()=>{
     const isLogin=async()=>{
       try{
- const result = await axios.get("http://localhost:8585/users/loggedInUser", {
+ const result = await axios.get(`${backendUrl}/users/loggedInUser`, {
           withCredentials: true
         });
 

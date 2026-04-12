@@ -14,7 +14,7 @@ const [caption, setCaption] = React.useState('');
 const [media, setMedia] = React.useState(null);
 const [mediaPreview, setMediaPreview] = React.useState(null);
 const [content,setContent]=useState("")
-
+const backendUrl=process.env.BACKEND_URL;
 const user=useSelector(state=>state.user.user)
 const dispatch=useDispatch()
 const handleMediaChange = (e) => {
@@ -52,7 +52,7 @@ const handlePost=async()=>{
         formData.append('media',file)
     })
     formData.append('user',user._id)
-    const result= await axios.post("http://localhost:8585/post/upload",formData,{
+    const result= await axios.post(`${backendUrl}/post/upload`,formData,{
       withCredentials:true
     })
     console.log(result)

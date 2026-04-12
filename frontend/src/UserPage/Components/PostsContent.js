@@ -1,14 +1,15 @@
-import React, { useCallback, useMemo } from 'react'
+
 import Post from './Post'
 import axios from 'axios';
-import { useEffect,useState,useRef } from 'react';
+import { useEffect,useState } from 'react';
 function PostsContent() {
  const [randomPosts,setRandomPosts]=useState([]);
  const [error,setError]=useState(false);
+ const backendUrl=process.env.BACKEND_URL;
   useEffect(()=>{
     const getRandomPosts= async()=>{
       try{
-const result= await axios.get('http://localhost:8585/post/random',{
+const result= await axios.get(`${backendUrl}/post/random`,{
         withCredentials:true
       })
       
@@ -25,7 +26,7 @@ const result= await axios.get('http://localhost:8585/post/random',{
       }
     }
   getRandomPosts(); 
-  },[]);
+  },[backendUrl]);
 
   const defalut_content = [
     {

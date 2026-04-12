@@ -1,7 +1,8 @@
 import axios from 'axios'
+const backendUrl=process.env.BACKEND_URL;
 export const logout=async()=>{
 try {
-    const result=await axios.get("http://localhost:8585/users/logout",{
+    const result=await axios.get(`${backendUrl}/users/logout`,{
          withCredentials:true
     })
    

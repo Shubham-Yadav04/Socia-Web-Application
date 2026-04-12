@@ -25,13 +25,14 @@ function ProfileSection() {
     const options = { day: "numeric", month: "long", year: "numeric" };
     return date.toLocaleDateString("en-US", options);
   }
+  const backendUrl=process.env.BACKEND_URL;
   const dispatch=useDispatch();
   const usernameRef= useRef(user?.username || "");
   const bioRef= useRef(user?.bio || "");
 const [editDetail,setEditDetail]=useState(false);
 const [currentProfile, setCurrentProfile] = useState(null);
   const fetchProfile= useCallback(async(id)=>{
-   const res= await fetch(`http://localhost:8585/users/id/${id}`).then(res=>res.json());
+   const res= await fetch(`${backendUrl}/users/id/${id}`).then(res=>res.json());
    return res;
   },[])
 const isOwnProfile = profileInView === user._id;
@@ -75,7 +76,7 @@ setProfilePreview(null)
     };
 
     const res = await axios.put(
-      "http://localhost:8585/users/updateDetail",
+      `${backendUrl}/users/updateDetail`,
       updatedDetails,
       { withCredentials: true }
     );

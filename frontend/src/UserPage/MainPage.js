@@ -15,11 +15,11 @@ export default function MainPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
+const backendUrl=process.env.BACKEND_URL;
   useEffect(() => {
     const getLoggedInUser = async () => {
       try {
-        const result = await axios.get("http://localhost:8585/users/loggedInUser", {
+        const result = await axios.get(`${backendUrl}/users/loggedInUser`, {
           withCredentials: true
         });
 

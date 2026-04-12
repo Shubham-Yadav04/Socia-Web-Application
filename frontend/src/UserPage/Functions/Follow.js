@@ -1,9 +1,10 @@
 import axios from 'axios'
+const backendUrl=process.env.BACKEND_URL;
 export const follow=async(userId,profileId)=>{
    try {
     console.log("user id ",userId);
     console.log("profileId",profileId)
-       const response=await axios.post(`http://localhost:8585/users/follow/${userId}`,{
+       const response=await axios.post(`${backendUrl}/users/follow/${userId}`,{
 profileId
        },{
               withCredentials: true
@@ -20,7 +21,7 @@ export const unfollow=async(userId,profileId)=>{
     try {
      console.log("user id ",userId);
        console.log("profileId",profileId)
-              const response=await axios.post(`http://localhost:8585/users/unfollow/${userId}`,{
+              const response=await axios.post(`${backendUrl}/users/unfollow/${userId}`,{
        profileId     
               },{
                      withCredentials: true
